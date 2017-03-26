@@ -1,0 +1,56 @@
+.nav {
+  background-color: rgba(0,184,212,0.2);
+}
+
+.titleM {
+  flex-direction: row;
+}
+
+.icon {
+  resize-mode: stretch;
+  width: 40;
+  height: 40;
+}
+
+.title {
+  padding-top: 8;
+  font-size: 12;
+}
+
+.leftNavButtonText {
+
+}
+
+.rightNavButtonText {
+
+}
+
+.blur {
+
+}
+
+.bgImage {
+  flex: 1;
+}
+
+.container {
+  padding-top: 70;
+}
+
+.seperator {
+  flex: 1;
+  height: 1;
+  background-color: #FFFFFF;
+}
+
+.normalNews {
+  padding: 15;
+}
+
+.normalNews left {
+  font-size: 20;
+}
+
+.normalNews right {
+  font-size: 20;
+}
