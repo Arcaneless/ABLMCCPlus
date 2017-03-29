@@ -14,10 +14,11 @@ import {
   ListView,
   Navigator,
   Image,
-  TouchableOpacity
+  TouchableOpacity,
+  TouchableHighlight,
 } from 'react-native';
 import { BlurView, VibrancyView } from 'react-native-blur';
-import SideMenu from 'react-native-side-menu';
+import Drawer from 'react-native-drawer';
 
 var DomParser = require('react-native-html-parser').DOMParser;
 import styles from './styles.js';
@@ -26,6 +27,7 @@ import NormalNews from './NormalNews';
 
 var ABLMCC: Document = null;
 const screenWidth = Dimensions.get('window').width;
+const navHeight = Platform.OS == 'ios' ? 64 : 54;
 
 function getABLMCC(callback) {
   return fetch('http://web.ablmcc.edu.hk/index/index18.aspx')
@@ -85,7 +87,7 @@ class NavigatorPlus extends Component {
   }
 
   renderScene(route, navigator) {
-  	return (<route.component {...route.passProps} navigator={navigator} style={Platform.OS == 'ios' ? {paddingTop: 64} : {paddingTop: 54}} />);
+  	return (<route.component {...route.passProps} navigator={navigator} style={{paddingTop: navHeight}} />);
   }
 
   render() {
@@ -110,7 +112,14 @@ class NavigatorPlus extends Component {
                        <Text style={ styles.leftNavButtonText }>Back</Text>
                      </TouchableHighlight>
                     )
-                } else { return null }
+                } else {
+                  return (
+                    <TouchableOpacity
+                       onPress={() => { this.props.menu(); }} style={{paddingLeft: 10, paddingTop: navHeight/14}}>
+                       <Image source={require('./img/hamIcon.png')} style={styles.hamButton} />
+                     </TouchableOpacity>
+                  );
+                }
               },
               RightButton: (route, navigator, index, navState) => {
                 if (route.onPress) return (
@@ -144,9 +153,9 @@ class Menu extends Component {
   render() {
     return (
       <View>
-
+        <Text>Hi</Text>
       </View>
-      <Text>Hi</Text>
+
     );
   }
 }
@@ -166,12 +175,31 @@ export default class ABLMCCPlus extends Component {
   render() {
     const o = <Menu />;
     return (
-      <SideMenu menu={o} openMenuOffset={screenWidth*0.55}>
-        <NavigatorPlus />
-      </SideMenu>
+      <Drawer
+        ref={(ref) => this._drawer = ref}
+        type="overlay"
+        content={o}
+        acceptPan={true}
+        negotiatePan={true}
+        tapToClose={true}
+        openDrawerOffset={0.4} // 20% gap on the right side of drawer
+        panCloseMask={0.5}
+        closedDrawerOffset={-3}
+        styles={drawerStyles}
+        tweenHandler={(ratio) => ({
+          // main: { opacity:(2-ratio)/2 },
+          mainOverlay: {opacity:(ratio/2)},
+        })}
+        >
+          <NavigatorPlus menu={() => this._drawer.open()}/>
+      </Drawer>
     );
   }
+}
 
+const drawerStyles = {
+  drawer: { shadowColor: '#000000', shadowOpacity: 0.8, shadowRadius: 0},
+  mainOverlay: {backgroundColor: '#000000', opacity: 0},
 }
 
 AppRegistry.registerComponent('ABLMCCPlus', () => ABLMCCPlus);

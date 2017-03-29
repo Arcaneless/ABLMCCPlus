@@ -21,6 +21,13 @@
   font-size: 8;
 }
 
+.hamButton {
+  padding-left: 10;
+  resize-mode: stretch;
+  width: 30;
+  height: 30;
+}
+
 .leftNavButtonText {
 
 }

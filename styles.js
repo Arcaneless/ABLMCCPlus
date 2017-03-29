@@ -22,6 +22,12 @@ export default StyleSheet.create({
         "paddingTop": 8,
         "fontSize": 8
     },
+    "hamButton": {
+        "paddingLeft": 10,
+        "resizeMode": "stretch",
+        "width": 30,
+        "height": 30
+    },
     "leftNavButtonText": {},
     "rightNavButtonText": {},
     "blur": {},
