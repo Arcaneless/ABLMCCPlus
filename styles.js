@@ -17,7 +17,10 @@ export default StyleSheet.create({
         "width": 30,
         "height": 30
     },
-    "menu": {},
+    "menu": {
+        "backgroundColor": "#F5F5F5",
+        "alignItems": "center"
+    },
     "title": {
         "paddingTop": 8,
         "fontSize": 8

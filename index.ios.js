@@ -92,10 +92,6 @@ class NavigatorPlus extends Component {
 
   render() {
     console.log('Startup render');
-    const routes = [
-      {title: 'ABLMCC', index: 0},
-      {title: 'ABLMCC', index: 1},
-    ];
     return (
       <Navigator
         initialRoute={{ name: 'MainPage', component: MainPage }}
@@ -132,8 +128,8 @@ class NavigatorPlus extends Component {
               Title: (route, navigator, index, navState) => {
                 return (
                   <View style={styles.titleM}>
-                    <Image source={require('./img/ablmccIcon.png')} style={styles.icon} />
-                    <Text style={ styles.title }>香港仔浸信會呂明才書院{'\n'}Aberdeen Baptist Lui Ming Choi College</Text>
+                    <Image source={require('./img/ablmccIcon.png')} style={[styles.icon, {paddingTop: navHeight/10}]} />
+                    <Text style={[styles.title, {paddingTop: navHeight/10}]}>香港仔浸信會呂明才書院{'\n'}Aberdeen Baptist Lui Ming Choi College</Text>
                   </View>);
               },
               }}
@@ -152,8 +148,14 @@ class Menu extends Component {
 
   render() {
     return (
-      <View>
-        <Text>Hi</Text>
+      <View style={[styles.menu, {paddingTop: navHeight/5}]}>
+        <View style={{flexDirection: 'row'}}>
+          <Image source={require('./img/ablmccIcon.png')} style={{
+            resizeMode: 'stretch',
+            width: 40,
+            height: 40,}} />
+          <Text style={{fontSize: 20, color: '#03A9F4', paddingTop: 8}}>  ABLMCC浸中</Text>
+        </View>
       </View>
 
     );
@@ -179,17 +181,17 @@ export default class ABLMCCPlus extends Component {
         ref={(ref) => this._drawer = ref}
         type="overlay"
         content={o}
-        acceptPan={true}
         negotiatePan={true}
         tapToClose={true}
         openDrawerOffset={0.4} // 20% gap on the right side of drawer
+        panOpenMask={0.5}
         panCloseMask={0.5}
         closedDrawerOffset={-3}
         styles={drawerStyles}
         tweenHandler={(ratio) => ({
-          // main: { opacity:(2-ratio)/2 },
           mainOverlay: {opacity:(ratio/2)},
         })}
+        tweenDuration={200}
         >
           <NavigatorPlus menu={() => this._drawer.open()}/>
       </Drawer>
