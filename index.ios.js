@@ -146,7 +146,15 @@ class Menu extends Component {
     super(props);
   }
 
+  onPressList() {
+
+  }
+
   render() {
+    const listContent = ['一般宣布', '2', '3', '4', '5'];
+    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+    const dss = ds.cloneWithRows(listContent);
+    console.log('Menu render');
     return (
       <View style={[styles.menu, {paddingTop: navHeight/5}]}>
         <View style={{flexDirection: 'row'}}>
@@ -154,10 +162,21 @@ class Menu extends Component {
             resizeMode: 'stretch',
             width: 40,
             height: 40,}} />
-          <Text style={{fontSize: 20, color: '#03A9F4', paddingTop: 8}}>  ABLMCC浸中</Text>
+          <Text style={{fontSize: 20, color: '#03A9F4', paddingTop: 8, fontFamily: 'Raleway-Light'}}>  ABLMCC浸中</Text>
         </View>
+        <ListView dataSource={dss} style={{flexDirection: 'row', flex: 1}}
+          renderRow={(o) => (
+            <View style={{flexDirection: 'row', flex: 1}}>
+              <TouchableHighlight activeOpacity={0.1} underlayColor={'black'} onPress={ () => this.onPressList() } >
+                <View style={{padding: 5}}>
+                  <Text>{o}</Text>
+                  <View style={styles.seperator.grey} ></View>
+                </View>
+              </TouchableHighlight>
+            </View>
+          )}
+        />
       </View>
-
     );
   }
 }

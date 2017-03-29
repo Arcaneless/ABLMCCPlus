@@ -18,7 +18,7 @@ export default StyleSheet.create({
         "height": 30
     },
     "menu": {
-        "backgroundColor": "#F5F5F5",
+        "backgroundColor": "#FFFFFF",
         "alignItems": "center"
     },
     "title": {
@@ -44,6 +44,11 @@ export default StyleSheet.create({
         "flex": 1,
         "height": 1,
         "backgroundColor": "#FFFFFF"
+    },
+    "seperator grey": {
+        "flex": 1,
+        "height": 1,
+        "backgroundColor": "#000000"
     },
     "normalNews": {
         "paddingTop": 15,
