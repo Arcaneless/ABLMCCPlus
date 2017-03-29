@@ -14,12 +14,13 @@ export default StyleSheet.create({
     },
     "icon": {
         "resizeMode": "stretch",
-        "width": 40,
-        "height": 40
+        "width": 30,
+        "height": 30
     },
+    "menu": {},
     "title": {
         "paddingTop": 8,
-        "fontSize": 12
+        "fontSize": 8
     },
     "leftNavButtonText": {},
     "rightNavButtonText": {},

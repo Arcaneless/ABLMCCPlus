@@ -6,6 +6,7 @@
 import React, { Component } from 'react';
 import {
   Platform,
+  Dimensions,
   AppRegistry,
   StyleSheet,
   Text,
@@ -24,6 +25,7 @@ import styles from './styles.js';
 import NormalNews from './NormalNews';
 
 var ABLMCC: Document = null;
+const screenWidth = Dimensions.get('window').width;
 
 function getABLMCC(callback) {
   return fetch('http://web.ablmcc.edu.hk/index/index18.aspx')
@@ -70,23 +72,16 @@ class MainPage extends Component {
         <BlurView blurType="light" blurAmount={5} style={{flex: 1,
         width: null,
         height: null}} >
-        <NormalNews style={this.props.style}/>
+        {/* <NormalNews style={this.props.style}/> */}
         </BlurView>
       </Image>
     );
   }
 }
 
-export default class ABLMCCPlus extends Component {
+class NavigatorPlus extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      update: false
-    };
-  }
-
-  componentDidMount() {
-    //getABLMCC((p) => this.setState({update: true}));
   }
 
   renderScene(route, navigator) {
@@ -139,6 +134,44 @@ export default class ABLMCCPlus extends Component {
       />
     );
   }
+}
+
+class Menu extends Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    return (
+      <View>
+
+      </View>
+      <Text>Hi</Text>
+    );
+  }
+}
+
+export default class ABLMCCPlus extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      update: false
+    };
+  }
+
+  componentDidMount() {
+    //getABLMCC((p) => this.setState({update: true}));
+  }
+
+  render() {
+    const o = <Menu />;
+    return (
+      <SideMenu menu={o} openMenuOffset={screenWidth*0.55}>
+        <NavigatorPlus />
+      </SideMenu>
+    );
+  }
+
 }
 
 AppRegistry.registerComponent('ABLMCCPlus', () => ABLMCCPlus);
