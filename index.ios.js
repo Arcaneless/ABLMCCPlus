@@ -16,6 +16,8 @@ import {
   TouchableOpacity
 } from 'react-native';
 import { BlurView, VibrancyView } from 'react-native-blur';
+import SideMenu from 'react-native-side-menu';
+
 var DomParser = require('react-native-html-parser').DOMParser;
 import styles from './styles.js';
 
