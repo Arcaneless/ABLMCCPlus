@@ -128,6 +128,10 @@ class Menu extends Component {
     this.props.drawer.close();
   }
 
+  onPressSettings() {
+    this.props.drawer.close();
+  }
+
   render() {
     //console.log(this.props.nav);
     console.log('drawer' + this.props.drawer);
@@ -135,7 +139,7 @@ class Menu extends Component {
     const dss = ds.cloneWithRows(Array.from(listContent.keys()));
     console.log('Menu render');
     return (
-      <View style={[styles.menu, {paddingTop: navHeight/5, flex: 1}]}>
+      <View style={[styles.menu, {paddingTop: navHeight/5, flex: 1, flexDirection: 'column'}]}>
         <View style={{flexDirection: 'row'}}>
           <Image source={require('./img/ablmccIcon.png')} style={{
             resizeMode: 'stretch',
@@ -152,6 +156,12 @@ class Menu extends Component {
             </View>
           )}
         />
+        <View style={{flexDirection: 'row', alignSelf: 'stretch', padding: navHeight/5, backgroundColor: '#EEEEEE'}}>
+          <Image source={require('./img/gear.png')} style={[styles.settingsImage]} />
+          <TouchableOpacity onPress={ () => this.onPressSettings() } style={{paddingLeft: screenWidth*0.16}}>
+            <Text style={{fontSize: 17, paddingTop: 4}}>設定</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   }
@@ -165,10 +175,6 @@ export default class ABLMCCPlus extends Component {
       nav: undefined,
     };
     this._drawer = undefined;
-  }
-
-  componentDidMount() {
-    //getABLMCC((p) => this.setState({update: true}));
   }
 
   getDrawer() {
@@ -190,7 +196,7 @@ export default class ABLMCCPlus extends Component {
         content={(<Menu nav={this.getNav()} drawer={this.getDrawer()}/>)}
         negotiatePan={true}
         tapToClose={true}
-        openDrawerOffset={0.4} // 20% gap on the right side of drawer
+        openDrawerOffset={0.4} //open 60%
         panOpenMask={0.5}
         panCloseMask={0.5}
         closedDrawerOffset={-3}

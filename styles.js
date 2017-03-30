@@ -25,6 +25,12 @@ export default StyleSheet.create({
         "alignSelf": "center",
         "alignItems": "center"
     },
+    "settingsImage": {
+        "alignSelf": "flex-start",
+        "resizeMode": "stretch",
+        "width": 25,
+        "height": 25
+    },
     "title": {
         "paddingTop": 8,
         "fontSize": 8
