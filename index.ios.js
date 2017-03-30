@@ -194,7 +194,7 @@ export default class ABLMCCPlus extends Component {
   }
 
   render() {
-    console.log('Init render');
+    //console.log('Init render');
     const o = <Menu />;
     return (
       <Drawer
