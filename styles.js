@@ -21,6 +21,10 @@ export default StyleSheet.create({
         "backgroundColor": "#FFFFFF",
         "alignItems": "center"
     },
+    "menu list": {
+        "alignSelf": "center",
+        "alignItems": "center"
+    },
     "title": {
         "paddingTop": 8,
         "fontSize": 8
@@ -45,7 +49,8 @@ export default StyleSheet.create({
         "height": 1,
         "backgroundColor": "#FFFFFF"
     },
-    "seperator grey": {
+    "greyseperator": {
+        "flexDirection": "row",
         "flex": 1,
         "height": 1,
         "backgroundColor": "#000000"

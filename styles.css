@@ -17,6 +17,11 @@
   align-items: center;
 }
 
+.menu list {
+  align-self: center;
+  align-items: center;
+}
+
 .title {
   padding-top: 8;
   font-size: 8;
@@ -55,7 +60,8 @@
   background-color: #FFFFFF;
 }
 
-.seperator grey {
+.greyseperator  {
+  flex-direction: row;
   flex: 1;
   height: 1;
   background-color: #000000;

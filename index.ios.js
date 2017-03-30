@@ -19,11 +19,15 @@ import {
 } from 'react-native';
 import { BlurView, VibrancyView } from 'react-native-blur';
 import Drawer from 'react-native-drawer';
-
 var DomParser = require('react-native-html-parser').DOMParser;
-import styles from './styles.js';
 
-import NormalNews from './NormalNews';
+import NormalNews from './subpages/NormalNews';
+import Notice from './subpages/Notice';
+import Activities from './subpages/Activities';
+import Career from './subpages/Career';
+import Assignments from './subpages/Assignments';
+
+import styles from './styles.js';
 
 var ABLMCC: Document = null;
 const screenWidth = Dimensions.get('window').width;
@@ -42,59 +46,30 @@ function getABLMCC(callback) {
           .catch((err) => console.error(err));
 }
 
-class MainPage extends Component {
-  constructor(props) {
-    super(props);
-    console.log('MainPage load');
-  }
-
-  onPress() {
-  	alert("YO FROM RIGHT BUTTON");
-  }
-
-  gotoNext(component) {
-   this.props.navigator.push({
-      component: component,
-      passProps: {
-        id: '0',
-      },
-      onPress: this.onPress,
-      rightText: ''
-    })
-  }
-
-  render() {
-    console.log('MainPage render');
-    return (
-      <Image source={require('./img/app_bg2_1.png')} style={{
-        flex: 1,
-        width: null,
-        height: null
-      }}>
-        <BlurView blurType="light" blurAmount={5} style={{flex: 1,
-        width: null,
-        height: null}} >
-        {/* <NormalNews style={this.props.style}/> */}
-        </BlurView>
-      </Image>
-    );
-  }
-}
-
 class NavigatorPlus extends Component {
   constructor(props) {
     super(props);
+  }
+
+  componentDidMount() {
+    this.props.refE(this.getNav());
   }
 
   renderScene(route, navigator) {
   	return (<route.component {...route.passProps} navigator={navigator} style={{paddingTop: navHeight}} />);
   }
 
+  getNav() {
+    console.log('navvvvvvvv' + this._nav);
+    return this._nav;
+  }
+
   render() {
     console.log('Startup render');
     return (
       <Navigator
-        initialRoute={{ name: 'MainPage', component: MainPage }}
+        ref={(ref) => this._nav = ref}
+        initialRoute={{ name: 'NormalNews', component: NormalNews }}
         renderScene={this.renderScene}
         navigationBar={
           <Navigator.NavigationBar
@@ -141,22 +116,24 @@ class NavigatorPlus extends Component {
   }
 }
 
+const listContent = new Map([['一般宣布', NormalNews], ['通告', Notice], ['活動', Activities], ['升學擇業', Career], ['電子家課冊', Assignments]]);
 class Menu extends Component {
   constructor(props) {
     super(props);
   }
 
-  onPressList() {
-
+  onPressList(o) {
+    console.log(o + ' :::::: ' + listContent.get(o));
+    this.props.nav.resetTo({ name: o, component: listContent.get(o) });
   }
 
   render() {
-    const listContent = ['一般宣布', '2', '3', '4', '5'];
+    //console.log(this.props.nav);
     const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-    const dss = ds.cloneWithRows(listContent);
+    const dss = ds.cloneWithRows(Array.from(listContent.keys()));
     console.log('Menu render');
     return (
-      <View style={[styles.menu, {paddingTop: navHeight/5}]}>
+      <View style={[styles.menu, {paddingTop: navHeight/5, flex: 1}]}>
         <View style={{flexDirection: 'row'}}>
           <Image source={require('./img/ablmccIcon.png')} style={{
             resizeMode: 'stretch',
@@ -164,14 +141,11 @@ class Menu extends Component {
             height: 40,}} />
           <Text style={{fontSize: 20, color: '#03A9F4', paddingTop: 8, fontFamily: 'Raleway-Light'}}>  ABLMCC浸中</Text>
         </View>
-        <ListView dataSource={dss} style={{flexDirection: 'row', flex: 1}}
+        <ListView dataSource={dss} style={{alignSelf: "stretch"}}
           renderRow={(o) => (
-            <View style={{flexDirection: 'row', flex: 1}}>
-              <TouchableHighlight activeOpacity={0.1} underlayColor={'black'} onPress={ () => this.onPressList() } >
-                <View style={{padding: 5}}>
-                  <Text>{o}</Text>
-                  <View style={styles.seperator.grey} ></View>
-                </View>
+            <View>
+              <TouchableHighlight underlayColor={'#E0E0E0'} onPress={ () => this.onPressList(o) } style={{padding: 10, alignItems: 'center'}}>
+                <Text>{o}</Text>
               </TouchableHighlight>
             </View>
           )}
@@ -185,7 +159,8 @@ export default class ABLMCCPlus extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      update: false
+      update: false,
+      nav: undefined,
     };
   }
 
@@ -193,14 +168,23 @@ export default class ABLMCCPlus extends Component {
     //getABLMCC((p) => this.setState({update: true}));
   }
 
+  getDrawer() {
+    return this._drawer;
+  }
+
+  getNav() {
+    return this.state.nav;
+  }
+
   render() {
-    //console.log('Init render');
-    const o = <Menu />;
+    console.log('Init render');
+    console.log('kdsjhlfhld' + this.state.nav);
     return (
       <Drawer
+        nav={this.getNav()}
         ref={(ref) => this._drawer = ref}
         type="overlay"
-        content={o}
+        content={(<Menu nav={this.getNav()}/>)}
         negotiatePan={true}
         tapToClose={true}
         openDrawerOffset={0.4} // 20% gap on the right side of drawer
@@ -213,7 +197,7 @@ export default class ABLMCCPlus extends Component {
         })}
         tweenDuration={200}
         >
-          <NavigatorPlus menu={() => this._drawer.open()}/>
+          <NavigatorPlus menu={() => this.getDrawer().open()} refE={(ref) => this.setState({nav: ref})} />
       </Drawer>
     );
   }
