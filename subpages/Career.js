@@ -6,11 +6,16 @@ import {
   Navigator,
   TouchableOpacity
 } from 'react-native';
+import ABLMCCWrapper from '../ABLMCCWrapper';
 var DomParser = require('react-native-html-parser').DOMParser;
 import styles from '../styles.js';
 
 export default class Career extends Component {
   render() {
-    return null;
+    return (
+      <ABLMCCWrapper render={(
+        <Text style={this.props.style}>Career</Text>
+      )} />
+    );
   }
 }

@@ -22,7 +22,7 @@ import Drawer from 'react-native-drawer';
 var DomParser = require('react-native-html-parser').DOMParser;
 
 import NormalNews from './subpages/NormalNews';
-import Notice from './subpages/Notice';
+import Notices from './subpages/Notices';
 import Activities from './subpages/Activities';
 import Career from './subpages/Career';
 import Assignments from './subpages/Assignments';
@@ -116,7 +116,7 @@ class NavigatorPlus extends Component {
   }
 }
 
-const listContent = new Map([['一般宣布', NormalNews], ['通告', Notice], ['活動', Activities], ['升學擇業', Career], ['電子家課冊', Assignments]]);
+const listContent = new Map([['一般宣布', NormalNews], ['通告', Notices], ['活動', Activities], ['升學擇業', Career], ['電子家課冊', Assignments]]);
 class Menu extends Component {
   constructor(props) {
     super(props);
@@ -125,10 +125,12 @@ class Menu extends Component {
   onPressList(o) {
     console.log(o + ' :::::: ' + listContent.get(o));
     this.props.nav.resetTo({ name: o, component: listContent.get(o) });
+    this.props.drawer.close();
   }
 
   render() {
     //console.log(this.props.nav);
+    console.log('drawer' + this.props.drawer);
     const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     const dss = ds.cloneWithRows(Array.from(listContent.keys()));
     console.log('Menu render');
@@ -162,6 +164,7 @@ export default class ABLMCCPlus extends Component {
       update: false,
       nav: undefined,
     };
+    this._drawer = undefined;
   }
 
   componentDidMount() {
@@ -184,7 +187,7 @@ export default class ABLMCCPlus extends Component {
         nav={this.getNav()}
         ref={(ref) => this._drawer = ref}
         type="overlay"
-        content={(<Menu nav={this.getNav()}/>)}
+        content={(<Menu nav={this.getNav()} drawer={this.getDrawer()}/>)}
         negotiatePan={true}
         tapToClose={true}
         openDrawerOffset={0.4} // 20% gap on the right side of drawer
