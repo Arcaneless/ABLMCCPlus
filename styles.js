@@ -65,7 +65,8 @@ export default StyleSheet.create({
         "paddingTop": 15,
         "paddingRight": 15,
         "paddingBottom": 15,
-        "paddingLeft": 15
+        "paddingLeft": 15,
+        "backgroundColor": "transparent"
     },
     "normalNews left": {
         "fontSize": 20

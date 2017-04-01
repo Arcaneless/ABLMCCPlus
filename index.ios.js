@@ -15,8 +15,9 @@ import {
   Navigator,
   Image,
   TouchableOpacity,
-  TouchableHighlight,
+  TouchableHighlight
 } from 'react-native';
+import Button from 'react-native-material-button';
 import { BlurView, VibrancyView } from 'react-native-blur';
 import Drawer from 'react-native-drawer';
 var DomParser = require('react-native-html-parser').DOMParser;
@@ -26,25 +27,14 @@ import Notices from './subpages/Notices';
 import Activities from './subpages/Activities';
 import Career from './subpages/Career';
 import Assignments from './subpages/Assignments';
+import ABLMCCInterface from './ABLMCCInterface';
+var aInterface = new ABLMCCInterface();
 
 import styles from './styles.js';
 
 var ABLMCC: Document = null;
 const screenWidth = Dimensions.get('window').width;
 const navHeight = Platform.OS == 'ios' ? 64 : 54;
-
-function getABLMCC(callback) {
-  return fetch('http://web.ablmcc.edu.hk/index/index18.aspx')
-          .then((r) => r.text())
-          .then((rt) => {
-            let doc = new DomParser().parseFromString(rt);
-            console.log(doc);
-            ABLMCC = doc;
-            callback(doc);
-            return doc;
-          })
-          .catch((err) => console.error(err));
-}
 
 class NavigatorPlus extends Component {
   constructor(props) {
@@ -56,11 +46,11 @@ class NavigatorPlus extends Component {
   }
 
   renderScene(route, navigator) {
-  	return (<route.component {...route.passProps} navigator={navigator} style={{paddingTop: navHeight}} />);
+  	return (<route.component {...route.passProps} navigator={navigator} style={{paddingTop: navHeight}} face={aInterface} />);
   }
 
   getNav() {
-    console.log('navvvvvvvv' + this._nav);
+    console.log('nav ' + this._nav);
     return this._nav;
   }
 
@@ -69,7 +59,7 @@ class NavigatorPlus extends Component {
     return (
       <Navigator
         ref={(ref) => this._nav = ref}
-        initialRoute={{ name: 'NormalNews', component: NormalNews }}
+        initialRoute={{ name: 'NormalNews', component: NormalNews, passProps: {depth: 0} }}
         renderScene={this.renderScene}
         navigationBar={
           <Navigator.NavigationBar
@@ -78,15 +68,16 @@ class NavigatorPlus extends Component {
                 if(index > 0) {
                   return (
                     <TouchableHighlight
+                      style={{paddingLeft: navHeight/6}}
                        underlayColor="transparent"
                        onPress={() => { if (index > 0) { navigator.pop() } }}>
-                       <Text style={ styles.leftNavButtonText }>Back</Text>
+                       <Image source={require('./img/back.png')} style={{height: navHeight/2, width: navHeight/2}} />
                      </TouchableHighlight>
                     )
                 } else {
                   return (
                     <TouchableOpacity
-                       onPress={() => { this.props.menu(); }} style={{paddingLeft: 10, paddingTop: navHeight/14}}>
+                       onPress={() => { this.props.menu().open(); }} style={{paddingLeft: 10, paddingTop: navHeight/14}}>
                        <Image source={require('./img/hamIcon.png')} style={styles.hamButton} />
                      </TouchableOpacity>
                   );
@@ -111,6 +102,9 @@ class NavigatorPlus extends Component {
           style={styles.nav}
           />
         }
+        onDidFocus={() => {
+          this.props.master().getDepth();
+        }}
       />
     );
   }
@@ -134,7 +128,7 @@ class Menu extends Component {
 
   render() {
     //console.log(this.props.nav);
-    console.log('drawer' + this.props.drawer);
+    //console.log('drawer' + this.props.drawer);
     const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     const dss = ds.cloneWithRows(Array.from(listContent.keys()));
     console.log('Menu render');
@@ -150,18 +144,16 @@ class Menu extends Component {
         <ListView dataSource={dss} style={{alignSelf: "stretch"}}
           renderRow={(o) => (
             <View>
-              <TouchableHighlight underlayColor={'#E0E0E0'} onPress={ () => this.onPressList(o) } style={{padding: 10, alignItems: 'center'}}>
+              <Button onPressOut={() => this.onPressList(o)} withRipple={true} style={{padding: 10, alignItems: 'center'}}>
                 <Text>{o}</Text>
-              </TouchableHighlight>
+              </Button>
             </View>
           )}
         />
-        <View style={{flexDirection: 'row', alignSelf: 'stretch', padding: navHeight/5, backgroundColor: '#EEEEEE'}}>
+        <Button onPressOut={() => this.onPressSettings()} withRipple={true} style={{backgroundColor: 'transparent', flexDirection: 'row', alignSelf: 'stretch', padding: navHeight/5}}>
           <Image source={require('./img/gear.png')} style={[styles.settingsImage]} />
-          <TouchableOpacity onPress={ () => this.onPressSettings() } style={{paddingLeft: screenWidth*0.16}}>
-            <Text style={{fontSize: 17, paddingTop: 4}}>設定</Text>
-          </TouchableOpacity>
-        </View>
+          <Text style={{fontSize: 17, paddingTop: 4, paddingLeft: screenWidth*.16}}>設定</Text>
+        </Button>
       </View>
     );
   }
@@ -173,8 +165,19 @@ export default class ABLMCCPlus extends Component {
     this.state = {
       update: false,
       nav: undefined,
+      o: false
     };
     this._drawer = undefined;
+  }
+
+  getDepth() {
+    if(this.getNav() != undefined && this.getNav().getCurrentRoutes().length==1) {
+      console.log('out');
+      this.setState({o: false});
+    } else if(this.getDrawer() != undefined) {
+      console.log('in');
+      this.setState({o: true});
+    }
   }
 
   getDrawer() {
@@ -185,6 +188,10 @@ export default class ABLMCCPlus extends Component {
     return this.state.nav;
   }
 
+  getSelf() {
+    return this;
+  }
+
   render() {
     console.log('Init render');
     console.log('kdsjhlfhld' + this.state.nav);
@@ -193,6 +200,7 @@ export default class ABLMCCPlus extends Component {
         nav={this.getNav()}
         ref={(ref) => this._drawer = ref}
         type="overlay"
+        disabled={this.state.o}
         content={(<Menu nav={this.getNav()} drawer={this.getDrawer()}/>)}
         negotiatePan={true}
         tapToClose={true}
@@ -206,7 +214,7 @@ export default class ABLMCCPlus extends Component {
         })}
         tweenDuration={200}
         >
-          <NavigatorPlus menu={() => this.getDrawer().open()} refE={(ref) => this.setState({nav: ref})} />
+          <NavigatorPlus menu={() => this.getDrawer()} refE={(ref) => this.setState({nav: ref})} master={() => this.getSelf()} />
       </Drawer>
     );
   }
