@@ -1,14 +1,10 @@
 'use strict'
 var DomParser = require('react-native-html-parser').DOMParser;
 
-function NormalNewsRearrange(d) {
-
-}
-
 export default class ABLMCCInterface {
   constructor() {
     this.ablmcc = new Map([['NormalNews', undefined],['Notices', undefined],['Activities', undefined],['Career', undefined],['Assignments', undefined]]);
-    this.requested = new Map([['NormalNews', false],['Notices', false],['Activities', false],['Career', false],['Assignments', false]]);
+    this.requested = new Map([['NormalNews', false],['Notices', 10],['Activities', false],['Career', false],['Assignments', false]]);
   }
 
   getABLMCC(url, callback) {
@@ -46,16 +42,37 @@ export default class ABLMCCInterface {
               else text = caption + ' ' + text;
               json.content[p] = {'text': text, 'date': date, 'href': href};
               p++;
-              console.log(date + ': ' + text + ' :: ' + href);
             }
-          } else console.log('no ar');
-          console.log('\nNext\n');
+          }
         }
         this.ablmcc.set('NormalNews', json);
         callback(json);
       });
     } else if(this.requested.get('NormalNews')===true) {
       callback(this.ablmcc.get('NormalNews'));
+    }
+  }
+
+  getNotices(callback, lower, upper) {
+    if(this.ablmcc.get('Notices')===undefined || this.requested.get('Notices')<upper) {
+      this.requested.set('Notices', true);
+      this.getABLMCC('http://web.ablmcc.edu.hk/Content/07_parents/notice/index.aspx', (d) => {
+        let table = d.getElementByClassName('noticeList').childNodes;
+        var json = {'content': []};
+        //HTML Finding
+        for(let i=(lower<2 ? 2 : lower), p=0; i<(upper+2<table.length-1 ? upper+2 : table.length-1); i++) {
+          let ele = table[i];
+          let date = ele.childNodes[1].firstChild.nodeValue;
+          let caption = ele.childNodes[2].firstChild.firstChild.nodeValue;
+          let href = ele.childNodes[2].firstChild.attributes[0].nodeValue;
+          href = href.replace('../../..', '');
+          json.content[p++] = {'text': caption, 'date': date, 'href': href};
+        }
+        this.ablmcc.set('Notices', json);
+        callback(json);
+      });
+    } else {
+      callback(this.ablmcc.get('Notices'));
     }
   }
 }

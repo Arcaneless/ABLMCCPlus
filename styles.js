@@ -7,7 +7,7 @@ const {width, height, scale} = Dimensions.get("window"),
 
 export default StyleSheet.create({
     "nav": {
-        "backgroundColor": "rgba(0,184,212,0.2)"
+        "backgroundColor": "#81D4FA"
     },
     "titleM": {
         "flexDirection": "row"

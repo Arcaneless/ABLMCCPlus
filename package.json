@@ -16,7 +16,8 @@
     "react-native-material-button": "0.0.4",
     "react-native-navigation": "^2.0.0-experimental.256",
     "react-native-pdf-view": "^0.3.2",
-    "react-native-side-menu": "^0.20.1"
+    "react-native-side-menu": "^0.20.1",
+    "react-native-swipe-gestures": "^1.0.2"
   },
   "devDependencies": {
     "babel-jest": "19.0.0",
