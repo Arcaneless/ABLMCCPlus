@@ -14,7 +14,6 @@ export default class MainPage extends Component {
   }
 
   render() {
-    console.log('ABLMCCWrapper render');
     return (
       <Image source={require('./img/app_bg2_1.png')} style={{
         flex: 1,

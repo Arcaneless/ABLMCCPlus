@@ -1,7 +1,8 @@
 const month = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月']
-const fs = require('fs')
-
+import RNFetchBlob from 'react-native-fetch-blob'
+currentMonth = 9
 function read(file) {
+  console.log('start res');
   const allLines = file.split(/\r\n|\n/)
   var sum = []
   allLines.map((line, i) => {
@@ -9,7 +10,7 @@ function read(file) {
     if(line != '') {
       var n = readLine(line)
     }
-    sum.push.apply(sum, n);
+    sum.push.apply(sum, n)
   })
   return sum
 }
@@ -56,34 +57,51 @@ function initMap(t) {
   return nT
 }
 
+function formXDate(month, date) {
+  return initMap(date+'/'+month)
+}
+
 function dateTransform(date) {
+  let year = new Date().getFullYear()
   let t1 = []
   if(date.split('-').length>1) {
     t1 = date.split('-')
     t1 = t1.map(initMap)
+    let d1 = t1[0].split('-'), d2 = t1[1].split('-')
+    let dayCount = new Date(year, parseInt(d1[0]), 0).getDate()
+    let nr = [t1[0]], nMonth=parseInt(d1[0]), nDate=parseInt(d1[1])+1
+    while(formXDate(nMonth, nDate) != t1[1]) {
+      if(nDate>dayCount) nDate=1, nMonth++
+      if(nMonth>12) nMonth=1
+      nr = nr.concat(formXDate(nMonth, nDate))
+      if(formXDate(nMonth, nDate) == t1[1]) break
+      nDate++
+    }
+    nr = nr.concat(t1[1])
+    return nr
   }
   else if(date.split(',').length>1) t1 = date.split(',')
   else t1[0] = date
   // / process
-  t1 = t1.map(t => {
-
-  })
+  t1 = t1.map(initMap)
   return t1
 }
+
 
 export default class SCReader {
   constructor() {
     this.already = undefined
   }
+
   getEvents() {
     return new Promise((resolve, err) => {
       if(this.already != undefined) resolve(this.already)
-      fs.readFile('sc.txt', 'utf8', (err2, data) => {
-        if (err2) err(err2)
-        console.log('Read OK: ' + filename)
+      RNFetchBlob.fs.readFile(RNFetchBlob.fs.dirs.MainBundleDir+'/data/sc.txt', 'utf8')
+      .then((data) => {
+        console.log('Read OK')
         this.already = read(data.toString())
         resolve(this.already)
-      })
+      }).catch(err => console.error(err))
     })
   }
 }
