@@ -1,28 +1,55 @@
 'use strict'
 var DomParser = require('react-native-html-parser').DOMParser;
 
+function getABLMCC(url, callback) {
+  return fetch(url)
+          .then((r) => r.text())
+          .then((rt) => {
+            let doc = new DomParser().parseFromString(rt);
+            //console.log(doc);
+            callback(doc);
+            return doc;
+          })
+          .catch((err) => console.error(err));
+}
+
+function getABLMCCNotices(year, callback) {
+  return fetch('http://web.ablmcc.edu.hk/Content/07_parents/notice/index.aspx')
+          .then((r) => r.text())
+          .then((rt) => {
+            let doc = new DomParser().parseFromString(rt);
+            let target = "ctl00%24ContentPlaceHolder1%24ddlstSchoolYear";
+            let viewState = encodeURIComponent(doc.getElementById('__VIEWSTATE').attributes[3].nodeValue);
+            let eventValidation = encodeURIComponent(doc.getElementById('__EVENTVALIDATION').attributes[3].nodeValue);
+            let yr = new Date().getFullYear();
+            let month = new Date().getMonth();
+            let placeHolder = year == 0 ? (month<9 ? yr-1 : yr) : year;
+            fetch('http://web.ablmcc.edu.hk/Content/07_parents/notice/index.aspx', {
+              method: "POST",
+              headers: {"Content-Type": "application/x-www-form-urlencoded"},
+              body: "__EVENTTARGET="+target+"&__VIEWSTATE="+viewState+"&__EVENTVALIDATION="+eventValidation+"&__SCROLLPOSITIONX=0&__SCROLLPOSITIONY=0"+
+              "&ctl00%24ContentPlaceHolder1%24ddlstSchoolYear="+placeHolder
+            }).then((r) => r.text()).then((rt) => {
+              let doc = new DomParser().parseFromString(rt);
+              callback(doc);
+            })
+            .catch((err) => console.error(err));
+          })
+          .catch((err) => console.error(err));
+}
+
 export default class ABLMCCInterface {
   constructor() {
     this.ablmcc = new Map([['NormalNews', undefined],['Notices', undefined],['Activities', undefined],['Career', undefined],['Assignments', undefined]]);
     this.requested = new Map([['NormalNews', false],['Notices', 10],['Activities', false],['Career', false],['Assignments', false]]);
   }
 
-  getABLMCC(url, callback) {
-    return fetch(url)
-            .then((r) => r.text())
-            .then((rt) => {
-              let doc = new DomParser().parseFromString(rt);
-              //console.log(doc);
-              callback(doc);
-              return doc;
-            })
-            .catch((err) => console.error(err));
-  }
+
 
   getNormalNews(callback) {
     if(this.ablmcc.get('NormalNews')===undefined) {
       this.requested.set('NormalNews', true);
-      this.getABLMCC('http://web.ablmcc.edu.hk/Content/08_others/01_what_is_new/index.aspx', (d) => {
+      getABLMCC('http://web.ablmcc.edu.hk/Content/08_others/01_what_is_new/index.aspx', (d) => {
         let table = d.getElementByClassName('latestNews').childNodes;
         var json = {'content': []};
         //HTML Finding
@@ -53,10 +80,10 @@ export default class ABLMCCInterface {
     }
   }
 
-  getNotices(callback, lower, upper) {
+  getNotices(callback, lower, upper, year) {
     if(this.ablmcc.get('Notices')===undefined || this.requested.get('Notices')<upper) {
       this.requested.set('Notices', true);
-      this.getABLMCC('http://web.ablmcc.edu.hk/Content/07_parents/notice/index.aspx', (d) => {
+      getABLMCCNotices(year, (d) => {
         let table = d.getElementByClassName('noticeList').childNodes;
         var json = {'content': []};
         //HTML Finding

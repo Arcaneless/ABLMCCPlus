@@ -1,3 +1,4 @@
+'use strict'
 import React, { Component } from 'react';
 import {
   Text,
@@ -20,6 +21,7 @@ export default class Notices extends Component {
     this.state = {
       info: undefined,
       waiting: false,
+      year: this.props.year,
       loaded: 20,
     };
   }
@@ -27,9 +29,8 @@ export default class Notices extends Component {
   fetchData() {
     this.props.face.getNotices((j) => {
       this.setState({info: j, waiting: false});
-    }, 0, this.state.loaded);
+    }, 0, this.state.loaded, this.state.year);
     this.setState({loaded: this.state.loaded+10});
-
   }
 
   componentDidMount() {
@@ -42,13 +43,14 @@ export default class Notices extends Component {
 
   gotoNext(component, v) {
    this.props.navigator.push({
+      name: 'APDFView',
       component: component,
       passProps: {
         depth: 1,
         id: '1',
         value: v,
       }
-    })
+    });
   }
 
   loadMoreContentAsync = async () => {
@@ -82,13 +84,12 @@ export default class Notices extends Component {
             dataSource={dss}
             canLoadMore={true}
             onLoadMoreAsync={() => this.loadMoreContentAsync()}
-
             renderRow={(o) => (
               <View>
-                <Button onPressOut={() => this.onPress(o)} withRipple={true} style={[styles.normalNews]} >
+                <TouchableOpacity onPress={() => this.onPress(o)} style={styles.normalNews} >
                   <Text style={styles.normalNews.left}>{obj[o].text}</Text>
                   <Text style={styles.normalNews.right}>{obj[o].date}</Text>
-                </Button>
+                </TouchableOpacity>
                 <View style={styles.seperator}></View>
               </View>
             )}

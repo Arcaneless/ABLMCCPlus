@@ -25,7 +25,7 @@ var DomParser = require('react-native-html-parser').DOMParser;
 import NormalNews from './subpages/NormalNews';
 import Notices from './subpages/Notices';
 import Activities from './subpages/Activities';
-import Career from './subpages/Career';
+import SchoolCalendar from './subpages/SchoolCalendar';
 import Assignments from './subpages/Assignments';
 import ABLMCCInterface from './ABLMCCInterface';
 var aInterface = new ABLMCCInterface();
@@ -39,6 +39,7 @@ const navHeight = Platform.OS == 'ios' ? 64 : 54;
 class NavigatorPlus extends Component {
   constructor(props) {
     super(props);
+    //this.props.ref(this);
   }
 
   componentDidMount() {
@@ -46,7 +47,7 @@ class NavigatorPlus extends Component {
   }
 
   renderScene(route, navigator) {
-  	return (<route.component {...route.passProps} navigator={navigator} style={{paddingTop: navHeight}} face={aInterface} />);
+  	return (<route.component {...route.passProps} navigator={navigator} face={aInterface} />);
   }
 
   getNav() {
@@ -110,7 +111,7 @@ class NavigatorPlus extends Component {
   }
 }
 
-const listContent = new Map([['一般宣布', NormalNews], ['通告', Notices], ['活動', Activities], ['升學擇業', Career], ['電子家課冊', Assignments]]);
+const listContent = new Map([['一般宣布', NormalNews], ['通告', Notices], ['活動', Activities], ['校曆', SchoolCalendar], ['電子家課冊', Assignments]]);
 class Menu extends Component {
   constructor(props) {
     super(props);
@@ -118,7 +119,8 @@ class Menu extends Component {
 
   onPressList(o) {
     console.log(o + ' :::::: ' + listContent.get(o));
-    this.props.nav.resetTo({ name: o, component: listContent.get(o) });
+    if(o == '通告') this.props.nav.resetTo({ name: o, component: listContent.get(o) , passProps: {year: 0}});
+    else this.props.nav.resetTo({ name: o, component: listContent.get(o) });
     this.props.drawer.close();
   }
 
@@ -159,29 +161,74 @@ class Menu extends Component {
   }
 }
 
+class MenuR extends Component {
+  constructor(props) {
+    super(props);
+  }
+
+  onPressList(o) {
+    this.props.nav.resetTo({
+       name: '通告',
+       component: Notices,
+       passProps: {
+         year: o
+       }
+     });
+    this.props.drawer.close();
+  }
+
+  render() {
+    let yr = new Date().getFullYear();
+    let month = new Date().getMonth();
+    let nearest = month<9 ? yr : yr+1;
+    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+    const dss = ds.cloneWithRows([...Array(nearest-2008)].map((x, i) => x = 2008+i));
+    return (
+      <View style={[styles.menu, {paddingTop: navHeight/5, flex: 1, flexDirection: 'column'}]}>
+        <ListView dataSource={dss} style={{alignSelf: "stretch"}}
+          renderRow={(o) => (
+            <View>
+              <Button onPressOut={() => this.onPressList(o)} withRipple={true} style={{padding: 10, alignItems: 'center'}}>
+                <Text>{o}-{o+1} 年度</Text>
+              </Button>
+            </View>
+          )}
+        />
+      </View>
+    );
+  }
+}
+
 export default class ABLMCCPlus extends Component {
   constructor(props) {
     super(props);
     this.state = {
       update: false,
       nav: undefined,
-      o: false
+      o: false,
+      oR: false,
     };
     this._drawer = undefined;
   }
 
   getDepth() {
-    if(this.getNav() != undefined && this.getNav().getCurrentRoutes().length==1) {
-      console.log('out');
-      this.setState({o: false});
-    } else if(this.getDrawer() != undefined) {
-      console.log('in');
-      this.setState({o: true});
+    if(this.getNav() != undefined && this.getNav().getCurrentRoutes().length==1) this.setState({o: false});
+    else if(this.getDrawer() != undefined) this.setState({o: true});
+    if(this.getNav() != undefined && this.getNav().getCurrentRoutes()[0].name == '通告') {
+      console.log('in2');
+      this.setState({oR: false});
+    } else {
+      console.log('out2');
+      this.setState({oR: true});
     }
   }
 
   getDrawer() {
     return this._drawer;
+  }
+
+  getDrawerR() {
+    return this._drawerR;
   }
 
   getNav() {
@@ -197,7 +244,7 @@ export default class ABLMCCPlus extends Component {
     console.log('kdsjhlfhld' + this.state.nav);
     return (
       <Drawer
-        nav={this.getNav()}
+        side={'left'}
         ref={(ref) => this._drawer = ref}
         type="overlay"
         disabled={this.state.o}
@@ -214,7 +261,26 @@ export default class ABLMCCPlus extends Component {
         })}
         tweenDuration={200}
         >
-          <NavigatorPlus menu={() => this.getDrawer()} refE={(ref) => this.setState({nav: ref})} master={() => this.getSelf()} />
+          <Drawer
+            side={'right'}
+            ref={(ref) => this._drawerR = ref}
+            type="overlay"
+            disabled={this.state.oR}
+            content={(<MenuR nav={this.getNav()} drawer={this.getDrawerR()} />)}
+            negotiatePan={true}
+            tapToClose={true}
+            openDrawerOffset={0.4} //open 60%
+            panOpenMask={0.5}
+            panCloseMask={0.5}
+            closedDrawerOffset={-3}
+            styles={drawerStyles}
+            tweenHandler={(ratio) => ({
+              mainOverlay: {opacity:(ratio/2)},
+            })}
+            tweenDuration={200}
+            >
+              <NavigatorPlus menu={() => this.getDrawer()} refE={(ref) => this.setState({nav: ref})} master={() => this.getSelf()} />
+          </Drawer>
       </Drawer>
     );
   }

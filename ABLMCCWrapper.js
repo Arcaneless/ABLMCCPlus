@@ -24,7 +24,9 @@ export default class MainPage extends Component {
         <BlurView blurType="light" blurAmount={5} style={{flex: 1,
         width: null,
         height: null}} >
-        {this.props.render}
+          <View style={{paddingTop: navHeight}}>
+            {this.props.render}
+          </View>
         </BlurView>
       </Image>
     );

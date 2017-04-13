@@ -26,6 +26,10 @@ export default class NormalNews extends Component {
     this.props.face.getNormalNews((j) => this.setState({info: j}));
   }
 
+  componentWillUnmount() {
+    console.log('unmount');
+  }
+
   onPress(o) {
     console.log(o);
     this.gotoNext(APDFView, 'http://web.ablmcc.edu.hk'+this.state.info.content[o].href);
@@ -33,6 +37,7 @@ export default class NormalNews extends Component {
 
   gotoNext(component, v) {
    this.props.navigator.push({
+      name: 'APDFView',
       component: component,
       passProps: {
         depth: 1,
@@ -43,23 +48,23 @@ export default class NormalNews extends Component {
   }
 
   render() {
+    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     if(this.state.info != undefined) {
       console.log('normal news render');
       let obj = this.state.info.content;
-      const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
       let p = [...Array(obj.length)].map((x, i) => x = i);
       const dss = ds.cloneWithRows(p.map(String));
 
       //console.log(a);
       return (
         <ABLMCCWrapper render={(
-          <ListView style={this.props.style} dataSource={dss}
+          <ListView style={this.props.style} dataSource={dss} onEndReached={() => console.log('hi')}
             renderRow={(o) => (
               <View>
-                <Button onPressOut={() => this.onPress(o)} withRipple={true} style={[styles.normalNews]} >
+                <TouchableOpacity onPress={() => this.onPress(o)} style={[styles.normalNews]} >
                   <Text style={styles.normalNews.left}>{obj[o].text}</Text>
                   <Text style={styles.normalNews.right}>{obj[o].date}</Text>
-                </Button>
+                </TouchableOpacity>
                 <View style={styles.seperator}></View>
               </View>
             )}
