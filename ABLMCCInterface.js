@@ -1,6 +1,41 @@
 'use strict'
 var DomParser = require('react-native-html-parser').DOMParser;
 
+function classNameConvert(classname) {
+    return (parseInt(classname)-1)*4 + (classname.charCodeAt(1)-65);
+}
+
+function HWBuilder(table) {
+  let result = [];
+  for(let i=2, currentSubject='', p=0; i<table.length-1; i++) {
+    let ele = table[i];
+    let holder = ele.childNodes[1].firstChild;
+    let subject = holder == null ? currentSubject : holder.nodeValue;
+    if(currentSubject != subject) currentSubject = subject;
+    let date = ele.childNodes[2].firstChild.firstChild.nodeValue;
+    let summary = ele.childNodes[2].lastChild.firstChild.nodeValue;
+    result[p++] = {'subject': subject, 'summary': summary, 'date': date};
+  }
+  return result;
+}
+
+function checkAvailability() {
+  const timeout = new Promise((resolve, reject) => {
+      setTimeout(reject, 500, 'Request timed out');
+  });
+
+  const request = fetch('http://web.ablmcc.edu.hk/index/index18.aspx?nnnid=1');
+
+  return Promise
+      .race([timeout, request])
+      .then(response => {
+        console.log('server is online'); return true;
+      })
+      .catch(error => {
+        console.log('server is down'); return false;
+      });
+}
+
 function getABLMCC(url, callback) {
   return fetch(url)
           .then((r) => r.text())
@@ -15,8 +50,7 @@ function getABLMCC(url, callback) {
 
 function getABLMCCNotices(year, callback) {
   return fetch('http://web.ablmcc.edu.hk/Content/07_parents/notice/index.aspx')
-          .then((r) => r.text())
-          .then((rt) => {
+          .then((r) => r.text()).then((rt) => {
             let doc = new DomParser().parseFromString(rt);
             let target = "ctl00%24ContentPlaceHolder1%24ddlstSchoolYear";
             let viewState = encodeURIComponent(doc.getElementById('__VIEWSTATE').attributes[3].nodeValue);
@@ -24,18 +58,39 @@ function getABLMCCNotices(year, callback) {
             let yr = new Date().getFullYear();
             let month = new Date().getMonth();
             let placeHolder = year == 0 ? (month<9 ? yr-1 : yr) : year;
-            fetch('http://web.ablmcc.edu.hk/Content/07_parents/notice/index.aspx', {
+            return fetch('http://web.ablmcc.edu.hk/Content/07_parents/notice/index.aspx', {
               method: "POST",
               headers: {"Content-Type": "application/x-www-form-urlencoded"},
               body: "__EVENTTARGET="+target+"&__VIEWSTATE="+viewState+"&__EVENTVALIDATION="+eventValidation+"&__SCROLLPOSITIONX=0&__SCROLLPOSITIONY=0"+
               "&ctl00%24ContentPlaceHolder1%24ddlstSchoolYear="+placeHolder
-            }).then((r) => r.text()).then((rt) => {
-              let doc = new DomParser().parseFromString(rt);
-              callback(doc);
-            })
-            .catch((err) => console.error(err));
+            });
+          })
+          .then((r) => r.text()).then((rt) => {
+            let doc = new DomParser().parseFromString(rt);
+            callback(doc);
           })
           .catch((err) => console.error(err));
+}
+
+function getABLMCCHW(className, callback) {
+  return fetch('http://web.ablmcc.edu.hk/Content/07_parents/homework/index.aspx')
+        .then((r) => r.text()).then((rt) => {
+          let doc = new DomParser().parseFromString(rt);
+          let target = "ctl00%24ContentPlaceHolder1%24"+(204+classNameConvert(className));
+          let viewState = encodeURIComponent(doc.getElementById('__VIEWSTATE').attributes[3].nodeValue);
+          let eventValidation = encodeURIComponent(doc.getElementById('__EVENTVALIDATION').attributes[3].nodeValue);
+          return fetch('http://web.ablmcc.edu.hk/Content/07_parents/homework/index.aspx', {
+            method: "POST",
+            headers: {"Content-Type": "application/x-www-form-urlencoded"},
+            body: "__EVENTTARGET="+target+"&__VIEWSTATE="+viewState+"&__EVENTVALIDATION="+eventValidation+"&__SCROLLPOSITIONX=0&__SCROLLPOSITIONY=0"
+          });
+        })
+        .then((r) => r.text()).then((rt) => {
+          let doc = new DomParser().parseFromString(rt);
+          callback(doc);
+          return doc;
+        })
+        .catch((err) => console.error(err));
 }
 
 export default class ABLMCCInterface {
@@ -44,7 +99,9 @@ export default class ABLMCCInterface {
     this.requested = new Map([['NormalNews', false],['Notices', 10],['Activities', false],['Career', false],['Assignments', false]]);
   }
 
-
+  checkAvailability(callback) {
+    checkAvailability().then(state => callback(state));
+  }
 
   getNormalNews(callback) {
     if(this.ablmcc.get('NormalNews')===undefined) {
@@ -101,5 +158,42 @@ export default class ABLMCCInterface {
     } else {
       callback(this.ablmcc.get('Notices'));
     }
+  }
+
+  //No checking***
+  getHomework(className, callback) {
+    console.log('call');
+    callback( {'today': [
+      {'subject': "Chinese", 'summary': "Testing 1111", 'date': "01-09-2017"}
+    ], 'next': [
+      {'subject': "Chinese", 'summary': "Testing 1111", 'date': "01-09-2017"}
+    ], 'nextnext': [
+      {'subject': "Chinese", 'summary': "Testing 1111", 'date': "01-09-2017"}
+    ]} );
+    getABLMCCHW(className, d => {
+        let table = d.getElementByClassName('homeworkIssue') != null ? d.getElementByClassName('homeworkIssue').childNodes : null;
+        let dueTable = d.getElementByClassName('twoDueHomeworkTable').childNodes[1].childNodes;
+        var json = {'today': [], 'next': [], 'nextnext': []};
+        //homeworkIssue finding
+        json.today = table != null ? HWBuilder(table) : [];
+        //duetoHomework finding
+        let left = dueTable[1], right = dueTable[3];
+        if(left.childNodes.length > 1) {
+          let title = left.childNodes[1].firstChild.nodeValue;
+          let table = left.childNodes[3].childNodes;
+          json.next = HWBuilder(table);
+          json.next.unshift(title);
+        }
+        if(right.childNodes.length > 1) {
+          let title = right.childNodes[1].firstChild.nodeValue;
+          let table = right.childNodes[3].childNodes;
+          json.nextnext = HWBuilder(table);
+          json.nextnext.unshift(title);
+        }
+        console.log(json);
+        this.ablmcc.set('Notices', json);
+        callback(json);
+      }
+    );
   }
 }

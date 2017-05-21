@@ -1,3 +1,4 @@
+/* @flow */
 /**
  * @Arcaneless
  */
@@ -22,6 +23,9 @@ import { BlurView, VibrancyView } from 'react-native-blur';
 import Drawer from 'react-native-drawer';
 var DomParser = require('react-native-html-parser').DOMParser;
 
+import ErrorPage from './subpages/ErrorPage';
+import Loading from './subpages/Loading';
+
 import NormalNews from './subpages/NormalNews';
 import Notices from './subpages/Notices';
 import Activities from './subpages/Activities';
@@ -35,6 +39,8 @@ import styles from './styles.js';
 var ABLMCC: Document = null;
 const screenWidth = Dimensions.get('window').width;
 const navHeight = Platform.OS == 'ios' ? 64 : 54;
+var ablmcc = {isDown: false,
+              checkedStatus: false};
 
 class NavigatorPlus extends Component {
   constructor(props) {
@@ -47,7 +53,10 @@ class NavigatorPlus extends Component {
   }
 
   renderScene(route, navigator) {
-  	return (<route.component {...route.passProps} navigator={navigator} face={aInterface} />);
+    console.log('render scene');
+  	return ablmcc.checkedStatus
+            ? (ablmcc.isDown ? (<ErrorPage />) : (<route.component {...route.passProps} navigator={navigator} face={aInterface} />))
+            : (<Loading />);
   }
 
   getNav() {
@@ -60,7 +69,7 @@ class NavigatorPlus extends Component {
     return (
       <Navigator
         ref={(ref) => this._nav = ref}
-        initialRoute={{ name: 'NormalNews', component: NormalNews, passProps: {depth: 0} }}
+        initialRoute={{ name: 'NormalNews', component: NormalNews, passProps: {depth: 0}}}
         renderScene={this.renderScene}
         navigationBar={
           <Navigator.NavigationBar
@@ -118,7 +127,7 @@ class Menu extends Component {
   }
 
   onPressList(o) {
-    console.log(o + ' :::::: ' + listContent.get(o));
+    console.log(o + ' ----> ' + listContent.get(o));
     if(o == '通告') this.props.nav.resetTo({ name: o, component: listContent.get(o) , passProps: {year: 0}});
     else this.props.nav.resetTo({ name: o, component: listContent.get(o) });
     this.props.drawer.close();
@@ -202,6 +211,11 @@ class MenuR extends Component {
 export default class ABLMCCPlus extends Component {
   constructor(props) {
     super(props);
+    aInterface.checkAvailability(state => {
+      ablmcc.isDown = !state;
+      ablmcc.checkedStatus = true;
+      if(ablmcc.isDown) this.getNav().resetTo({ name: "ErrorPage", component: ErrorPage });
+    });
     this.state = {
       update: false,
       nav: undefined,
@@ -240,8 +254,7 @@ export default class ABLMCCPlus extends Component {
   }
 
   render() {
-    console.log('Init render');
-    console.log('kdsjhlfhld' + this.state.nav);
+    console.log('Main render');
     return (
       <Drawer
         side={'left'}

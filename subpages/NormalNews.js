@@ -57,7 +57,7 @@ export default class NormalNews extends Component {
 
       //console.log(a);
       return (
-        <ABLMCCWrapper render={(
+        <ABLMCCWrapper>
           <ListView style={this.props.style} dataSource={dss} onEndReached={() => console.log('hi')}
             renderRow={(o) => (
               <View>
@@ -69,7 +69,7 @@ export default class NormalNews extends Component {
               </View>
             )}
           />
-        )} />
+        </ABLMCCWrapper>
       );
     } else {
       return (

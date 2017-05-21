@@ -24,6 +24,7 @@
 		140ED2AC1D01E1AD002B40FF /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
 		146834051AC3E58100842450 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
 		2C1FE2771E9F568A005D15B1 /* data in Resources */ = {isa = PBXBuildFile; fileRef = 2C1FE2761E9F568A005D15B1 /* data */; };
+		2C3B1D161EA0E98F00F06B7E /* IOSlaunchScreen.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C3B1D151EA0E98F00F06B7E /* IOSlaunchScreen.png */; };
 		2C60947B1E8F8ACC00A182E5 /* libRNFetchBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C60947A1E8F8A8500A182E5 /* libRNFetchBlob.a */; };
 		2CB9EE0F1E8BDBFC005FEFBF /* Raleway-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2CB9EE0E1E8BDBFC005FEFBF /* Raleway-Light.ttf */; };
 		2D02E4BC1E0B4A80006451C7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
@@ -278,6 +279,7 @@
 		146833FF1AC3E56700842450 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
 		1B3718AFC0704BB094DC91DB /* libRNBlur.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNBlur.a; sourceTree = "<group>"; };
 		2C1FE2761E9F568A005D15B1 /* data */ = {isa = PBXFileReference; lastKnownFileType = folder; name = data; path = ../data; sourceTree = "<group>"; };
+		2C3B1D151EA0E98F00F06B7E /* IOSlaunchScreen.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = IOSlaunchScreen.png; path = ../../IOSlaunchScreen.png; sourceTree = "<group>"; };
 		2C60945B1E8F8A8500A182E5 /* RNFetchBlob.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNFetchBlob.xcodeproj; path = "/Users/Marcus/Desktop/ABLMCC/ABLMCCPlus/node_modules/react-native-blur/ios/../../react-native-fetch-blob/ios/RNFetchBlob.xcodeproj"; sourceTree = "<absolute>"; };
 		2CB9EE0E1E8BDBFC005FEFBF /* Raleway-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Raleway-Light.ttf"; path = "../fonts/Raleway/Raleway-Light.ttf"; sourceTree = "<group>"; };
 		2D02E47B1E0B4A5D006451C7 /* ABLMCCPlus-tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ABLMCCPlus-tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -526,6 +528,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				2C3B1D151EA0E98F00F06B7E /* IOSlaunchScreen.png */,
 				2C1FE2761E9F568A005D15B1 /* data */,
 				2CB9EE0E1E8BDBFC005FEFBF /* Raleway-Light.ttf */,
 				13B07FAE1A68108700A75B9A /* ABLMCCPlus */,
@@ -638,6 +641,7 @@
 					};
 					13B07F861A680F5B00A75B9A = {
 						DevelopmentTeam = 68TJFQ948E;
+						ProvisioningStyle = Automatic;
 					};
 					2D02E47A1E0B4A5D006451C7 = {
 						CreatedOnToolsVersion = 8.2.1;
@@ -942,6 +946,7 @@
 			files = (
 				2CB9EE0F1E8BDBFC005FEFBF /* Raleway-Light.ttf in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				2C3B1D161EA0E98F00F06B7E /* IOSlaunchScreen.png in Resources */,
 				2C1FE2771E9F568A005D15B1 /* data in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 			);
@@ -1120,6 +1125,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = 68TJFQ948E;
@@ -1139,6 +1145,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.arcaneless.ablmccplus.ABLMCCPlus;
 				PRODUCT_NAME = ABLMCCPlus;
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -1148,6 +1156,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 68TJFQ948E;
 				HEADER_SEARCH_PATHS = (
@@ -1166,6 +1175,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.arcaneless.ablmccplus.ABLMCCPlus;
 				PRODUCT_NAME = ABLMCCPlus;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;

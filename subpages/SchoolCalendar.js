@@ -103,7 +103,7 @@ export default class SchoolCalendar extends Component {
       },
     };
     return (
-      <ABLMCCWrapper render={(
+      <ABLMCCWrapper>
         <View>
           <Calendar
             currentMonth={this.state.date}
@@ -124,7 +124,7 @@ export default class SchoolCalendar extends Component {
           </Button>
           {this.state.eventText.map(p => <Text key={p} style={{padding: 10}}>{p}</Text>)}
         </View>
-      )} />
+      </ABLMCCWrapper>
     );
   }
 }

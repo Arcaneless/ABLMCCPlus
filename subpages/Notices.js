@@ -78,7 +78,7 @@ export default class Notices extends Component {
       const dss = ds.cloneWithRows(p.map(String));
 
       return (
-        <ABLMCCWrapper render={(
+        <ABLMCCWrapper>
           <ListView style={this.props.style}
             renderScrollComponent={props => <InfiniteScrollView {...props} />} distanceToLoadMore={-20}
             dataSource={dss}
@@ -94,7 +94,7 @@ export default class Notices extends Component {
               </View>
             )}
           />
-        )} />
+        </ABLMCCWrapper>
       );
     } else {
       return (

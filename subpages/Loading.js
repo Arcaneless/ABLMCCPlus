@@ -10,11 +10,11 @@ import ABLMCCWrapper from '../ABLMCCWrapper';
 var DomParser = require('react-native-html-parser').DOMParser;
 import styles from '../styles.js';
 
-export default class Activities extends Component {
+export default class Loading extends Component {
   render() {
     return (
       <ABLMCCWrapper>
-        <Text style={this.props.style}>Activities</Text>
+        <Text style={this.props.style}>Loading</Text>
       </ABLMCCWrapper>
     );
   }

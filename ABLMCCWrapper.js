@@ -24,7 +24,7 @@ export default class MainPage extends Component {
         width: null,
         height: null}} >
           <View style={{paddingTop: navHeight}}>
-            {this.props.render}
+            {this.props.children}
           </View>
         </BlurView>
       </Image>

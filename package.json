@@ -8,10 +8,11 @@
   },
   "dependencies": {
     "fast-html-parser": "^1.0.1",
-    "react": "15.4.2",
-    "react-native": "0.42.3",
+    "react": "^16.0.0-alpha.6",
+    "react-native": "^0.43.3",
     "react-native-blur": "^2.0.0",
     "react-native-calendar": "^0.11.0",
+    "react-native-chooser": "^1.5.0",
     "react-native-fetch-blob": "^0.10.4",
     "react-native-html-parser": "0.0.4",
     "react-native-material-button": "0.0.4",
@@ -23,6 +24,7 @@
   "devDependencies": {
     "babel-jest": "19.0.0",
     "babel-preset-react-native": "1.9.1",
+    "flow-bin": "^0.44.0",
     "jest": "19.0.2",
     "react-test-renderer": "15.4.2"
   },
