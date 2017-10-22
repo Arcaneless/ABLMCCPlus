@@ -5,9 +5,9 @@ import {
   View,
   ListView,
   Navigator,
-  TouchableOpacity
+  TouchableOpacity,
+  TouchableHighlight
 } from 'react-native';
-import Button from 'react-native-material-button';
 import moment from 'moment';
 import SCReader from '../SCReader';
 import Calendar from 'react-native-calendar';
@@ -68,6 +68,11 @@ function getFromKey(key, data) {
 }
 
 export default class SchoolCalendar extends Component {
+  static navigationOptions = {
+    tabBarLabel: '校曆',
+    title: '校曆',
+  };
+
   constructor(props) {
     super(props);
     this.state = {
@@ -97,6 +102,9 @@ export default class SchoolCalendar extends Component {
       calendarContainer: {
         backgroundColor: 'transparent',
       },
+      weekendDayButton: {
+        backgroundColor: 'transparent',
+      },
       day: {
         fontSize: 15,
         textAlign: 'center'
@@ -119,9 +127,16 @@ export default class SchoolCalendar extends Component {
             titleFormat={'MMMM YYYY'}
             weekStart={0}
           />
-          <Button onPressOut={() => this.selectDate(moment().format())} withRipple={true} style={{padding: 10, backgroundColor: 'transparent', alignItems: 'center'}}>
+          <TouchableOpacity onPress={() => this.selectDate(moment().format())} style={{
+            padding: 10,
+            backgroundColor: 'transparent',
+            alignItems: 'center',
+            alignSelf: 'center',
+            height: 10,
+            width: 10
+          }}>
             <Text>Today</Text>
-          </Button>
+          </TouchableOpacity>
           {this.state.eventText.map(p => <Text key={p} style={{padding: 10}}>{p}</Text>)}
         </View>
       </ABLMCCWrapper>

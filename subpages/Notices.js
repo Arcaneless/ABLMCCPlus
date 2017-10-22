@@ -4,30 +4,35 @@ import {
   Text,
   View,
   ListView,
-  Navigator,
   TouchableOpacity,
   ActivityIndicator
 } from 'react-native';
+import { StackNavigator } from 'react-navigation';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
-import Button from 'react-native-material-button';
 import ABLMCCWrapper from '../ABLMCCWrapper';
 import APDFView from '../APDFView';
 var DomParser = require('react-native-html-parser').DOMParser;
 import styles from '../styles';
 
 export default class Notices extends Component {
+  static navigationOptions = {
+    tabBarLabel: '通告',
+    title: '通告',
+  };
+
   constructor(props) {
     super(props);
     this.state = {
       info: undefined,
       waiting: false,
-      year: this.props.year,
+      year: 0,
       loaded: 20,
     };
   }
 
   fetchData() {
-    this.props.face.getNotices((j) => {
+    let face = this.props.screenProps.face;
+    face.getNotices((j) => {
       this.setState({info: j, waiting: false});
     }, 0, this.state.loaded, this.state.year);
     this.setState({loaded: this.state.loaded+10});
@@ -38,18 +43,12 @@ export default class Notices extends Component {
   }
 
   onPress(o) {
-    this.gotoNext(APDFView, 'http://web.ablmcc.edu.hk'+this.state.info.content[o].href);
+    this.gotoNext('http://web.ablmcc.edu.hk'+this.state.info.content[o].href);
   }
 
-  gotoNext(component, v) {
-   this.props.navigator.push({
-      name: 'APDFView',
-      component: component,
-      passProps: {
-        depth: 1,
-        id: '1',
-        value: v,
-      }
+  gotoNext(v) {
+    this.props.navigation.navigate('PDFView', {
+      value: v,
     });
   }
 

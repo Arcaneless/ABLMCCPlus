@@ -52,10 +52,12 @@ function getABLMCC(url, callback) {
 }
 
 
-// get ABLMCC notices from user enter year
-// @param {Number} year - year chosen
-// @param {Callback} callback - the callback
-// @return {Promise} fetch - the fetching 
+/*
+  get ABLMCC notices from user enter year
+  @Param {Number} year - year chosen
+  @Param {Callback} callback - the callback
+  @Return {Promise} fetch - the fetching
+*/
 function getABLMCCNotices(year, callback) {
   return fetch('http://web.ablmcc.edu.hk/Content/07_parents/notice/index.aspx')
           .then((r) => r.text()).then((rt) => {
@@ -66,6 +68,7 @@ function getABLMCCNotices(year, callback) {
             let yr = new Date().getFullYear();
             let month = new Date().getMonth();
             let placeHolder = year == 0 ? (month<9 ? yr-1 : yr) : year;
+            console.log('placeHolder:' + placeHolder);
             return fetch('http://web.ablmcc.edu.hk/Content/07_parents/notice/index.aspx', {
               method: "POST",
               headers: {"Content-Type": "application/x-www-form-urlencoded"},
@@ -84,7 +87,7 @@ function getABLMCCHW(className, callback) {
   return fetch('http://web.ablmcc.edu.hk/Content/07_parents/homework/index.aspx')
         .then((r) => r.text()).then((rt) => {
           let doc = new DomParser().parseFromString(rt);
-          let target = "ctl00%24ContentPlaceHolder1%24"+(204+classNameConvert(className));
+          let target = "ctl00%24ContentPlaceHolder1%24"+(232+classNameConvert(className));
           let viewState = encodeURIComponent(doc.getElementById('__VIEWSTATE').attributes[3].nodeValue);
           let eventValidation = encodeURIComponent(doc.getElementById('__EVENTVALIDATION').attributes[3].nodeValue);
           return fetch('http://web.ablmcc.edu.hk/Content/07_parents/homework/index.aspx', {

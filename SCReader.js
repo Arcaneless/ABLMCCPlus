@@ -96,12 +96,13 @@ export default class SCReader {
   getEvents() {
     return new Promise((resolve, err) => {
       if(this.already != undefined) resolve(this.already)
+      console.log('SCReader: reading txt: ' + RNFetchBlob.fs.dirs.MainBundleDir+'/data/sc.txt');
       RNFetchBlob.fs.readFile(RNFetchBlob.fs.dirs.MainBundleDir+'/data/sc.txt', 'utf8')
       .then((data) => {
         console.log('Read OK')
         this.already = read(data.toString())
         resolve(this.already)
-      }).catch(err => console.error(err))
+      }).catch(err => console.error('SCReader Exception\n'+err))
     })
   }
 }

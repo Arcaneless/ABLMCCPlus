@@ -3,7 +3,6 @@ import {
   Text,
   View,
   ListView,
-  Navigator,
   TouchableOpacity,
   TouchableNativeFeedback
 } from 'react-native';
@@ -15,9 +14,10 @@ var DomParser = require('react-native-html-parser').DOMParser;
 import styles from '../styles.js';
 var norNews = null;
 
-class NormalNewsClass extends Component {
+export default class NormalNews extends Component {
   static navigationOptions = {
-    tabBarLabel: 'NormalNews',
+    tabBarLabel: '一般宣布',
+    title: '一般宣布',
   };
 
   constructor(props) {
@@ -38,13 +38,11 @@ class NormalNewsClass extends Component {
 
   onPress(o) {
     console.log(o);
-    this.gotoNext(APDFView, 'http://web.ablmcc.edu.hk'+this.state.info.content[o].href);
+    this.gotoNext('http://web.ablmcc.edu.hk'+this.state.info.content[o].href);
   }
 
-  gotoNext(component, v) {
+  gotoNext(v) {
     this.props.navigation.navigate('PDFView', {
-      depth: 1,
-      id: '1',
       value: v,
     });
   }
@@ -52,7 +50,7 @@ class NormalNewsClass extends Component {
   render() {
     const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     if(this.state.info != undefined) {
-      console.log('normal news render');
+      console.log('Render');
       let obj = this.state.info.content;
       let p = [...Array(obj.length)].map((x, i) => x = i);
       const dss = ds.cloneWithRows(p.map(String));
@@ -84,8 +82,3 @@ class NormalNewsClass extends Component {
     }
   }
 }
-
-export default NormalNews = StackNavigator({
-  Home: { screen: NormalNewsClass },
-  PDFView: { screen: APDFView },
-});

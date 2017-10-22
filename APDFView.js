@@ -3,6 +3,7 @@ import {
   WebView,
   ScrollView,
   Text,
+  Dimensions,
 } from 'react-native';
 import ABLMCCWrapper from './ABLMCCWrapper';
 //import RNFetchBlob from 'react-native-fetch-blob'
@@ -31,47 +32,31 @@ export default class APDFView extends Component {
 
   }
 
-  onSwipe(gestureName, gestureState) {
-    const {page, pageCount} = this.state;
-    const {SWIPE_UP, SWIPE_DOWN, SWIPE_LEFT, SWIPE_RIGHT} = swipeDirections;
-    this.setState({gestureName: gestureName});
-    switch (gestureName) {
-      case SWIPE_UP:
-        this.setState({page: page < pageCount ? page+1 : page});
-        break;
-      case SWIPE_DOWN:
-        this.setState({page: page > 1 ? page-1 : page});
-    }
-  }
-
   render() {
-    console.log(this.props.value);
+    //console.log(this.props.value);
     if(this.state.path != undefined) {
       return (
-        <GestureRecognizer
-        onSwipe={(direction, state) => this.onSwipe(direction, state)}
-        style={{
-          flex: 1,
-        }}
-        >
-          <Pdf ref={(pdf) => {this.pdf = pdf}}
-               source={this.state.path}
-               page={1}
-               scale={1}
-               horizontal={false}
-               onLoadComplete={(pageCount, pdfPath) => {
-                  this.setState({pageCount: pageCount});
-                  console.log(`total page count: ${pageCount} path:${pdfPath}`);
-               }}
-               onPageChanged={(page,pageCount) => {
-                  this.setState({page:page});
-                  console.log(`current page: ${page}`);
-               }}
-               onError={(error) => {
-                  console.log(error);
-               }}
-            />
-        </GestureRecognizer>
+        <Pdf ref={(pdf) => {this.pdf = pdf}}
+             source={this.state.path}
+             page={1}
+             scale={1}
+             horizontal={false}
+             onLoadComplete={(pageCount, pdfPath) => {
+                this.setState({pageCount: pageCount});
+                console.log(`total page count: ${pageCount} path:${pdfPath}`);
+             }}
+             onPageChanged={(page,pageCount) => {
+                this.setState({page:page});
+                console.log(`current page: ${page}`);
+             }}
+             onError={(error) => {
+                console.log(error);
+             }}
+             style={{
+               flex:1,
+               width:Dimensions.get('window').width,
+             }}
+        />
       );
     } else {
       return (

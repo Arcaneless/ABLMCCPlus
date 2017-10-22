@@ -18,11 +18,10 @@ import {
   TouchableOpacity,
   TouchableHighlight
 } from 'react-native';
-import { TabNavigator } from 'react-navigation';
-import Button from 'react-native-material-button';
-import { BlurView, VibrancyView } from 'react-native-blur';
-import Drawer from 'react-native-drawer';
-var DomParser = require('react-native-html-parser').DOMParser;
+import {
+  TabNavigator,
+  StackNavigator
+} from 'react-navigation';
 
 import ErrorPage from './subpages/ErrorPage';
 import Loading from './subpages/Loading';
@@ -33,9 +32,14 @@ import Notices from './subpages/Notices';
 import About from './subpages/About';
 import SchoolCalendar from './subpages/SchoolCalendar';
 import Assignments from './subpages/Assignments';
+import APDFView from './APDFView';
 
 import ABLMCCInterface from './ABLMCCInterface';
 var aInterface = new ABLMCCInterface();
+
+import log from './Logger';
+const Logger = new log();
+const commonLog = Logger.logging();
 
 import styles from './styles.js';
 
@@ -51,29 +55,53 @@ var ablmcc = {isDown: false,
 
 export default class ABLMCCPlus extends Component {
   render() {
-
+    Logger.logINFO(commonLog.indexRender());
     return (<ABLMCCPlusNav screenProps={{face: aInterface}} />);
   }
 }
 
 
+const NormalNewsc = StackNavigator({
+  Home: { screen: NormalNews },
+  PDFView: { screen: APDFView },
+});
+
+const Noticesc = StackNavigator({
+  Home: { screen: Notices },
+  PDFView: { screen: APDFView },
+});
+
+const Aboutc = StackNavigator({
+  Home: { screen: About },
+});
+
+const SchoolCalendarc = StackNavigator({
+  Home: { screen: SchoolCalendar },
+});
+
+const Assignmentsc = StackNavigator({
+  Home: { screen: Assignments },
+});
+
 // Navigator main
 const ABLMCCPlusNav = TabNavigator({
   NormalNews: {
-    screen: NormalNews
+    screen: NormalNewsc
   },
   Notices: {
-    screen: Notices
+    screen: Noticesc
   },
   About: {
-    screen: About
+    screen: Aboutc
   },
   SchoolCalendar: {
-    screen: SchoolCalendar
+    screen: SchoolCalendarc
   },
   Assignments: {
-    screen: Assignments
+    screen: Assignmentsc
   },
+}, {
+  lazy: true
 });
 
 AppRegistry.registerComponent('ABLMCCPlus', () => ABLMCCPlus);

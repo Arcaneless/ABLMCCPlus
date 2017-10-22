@@ -21,6 +21,11 @@ function concatArray(arrayCallback) {
 }
 
 export default class Assignments extends Component {
+  static navigationOptions = {
+    tabBarLabel: '電子家課冊',
+    title: '電子家課冊'
+  };
+
   constructor(props) {
     super(props);
     this.state = {
@@ -32,8 +37,9 @@ export default class Assignments extends Component {
   }
 
   onSelect(className) {
+    let face = this.props.screenProps.face;
     this.setState({currentSelected: className});
-    this.props.face.getHomework(className, (d) => this.setState({chosen: true, data: d}));
+    face.getHomework(className, (d) => this.setState({chosen: true, data: d}));
     return true;
   }
 
