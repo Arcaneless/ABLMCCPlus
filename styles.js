@@ -123,5 +123,22 @@ export default StyleSheet.create({
         "paddingLeft": 8,
         "backgroundColor": "transparent"
     },
-    "assFont": {}
+    "assFont": {},
+    "contact": {
+        "paddingTop": 8,
+        "paddingRight": 8,
+        "paddingBottom": 8,
+        "paddingLeft": 8,
+        "backgroundColor": "transparent"
+    },
+    "contactCategory": {
+        "paddingTop": 15,
+        "paddingRight": 15,
+        "paddingBottom": 15,
+        "paddingLeft": 15,
+        "backgroundColor": "transparent"
+    },
+    "contactCategoryText": {
+        "fontSize": 20
+    }
 });

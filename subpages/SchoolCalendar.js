@@ -69,7 +69,6 @@ function getFromKey(key, data) {
 
 export default class SchoolCalendar extends Component {
   static navigationOptions = {
-    tabBarLabel: '校曆',
     title: '校曆',
   };
 

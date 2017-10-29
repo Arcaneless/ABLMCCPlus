@@ -42,12 +42,12 @@ export default class APDFView extends Component {
              scale={1}
              horizontal={false}
              onLoadComplete={(pageCount, pdfPath) => {
-                this.setState({pageCount: pageCount});
+                //this.setState({pageCount: pageCount});
                 console.log(`total page count: ${pageCount} path:${pdfPath}`);
              }}
              onPageChanged={(page,pageCount) => {
-                this.setState({page:page});
-                console.log(`current page: ${page}`);
+                //this.setState({page:page});
+                //console.log(`current page: ${page}`);
              }}
              onError={(error) => {
                 console.log(error);

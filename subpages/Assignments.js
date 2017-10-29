@@ -22,7 +22,6 @@ function concatArray(arrayCallback) {
 
 export default class Assignments extends Component {
   static navigationOptions = {
-    tabBarLabel: '電子家課冊',
     title: '電子家課冊'
   };
 

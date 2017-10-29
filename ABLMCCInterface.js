@@ -68,7 +68,9 @@ function getABLMCCNotices(year, callback) {
             let yr = new Date().getFullYear();
             let month = new Date().getMonth();
             let placeHolder = year == 0 ? (month<9 ? yr-1 : yr) : year;
+
             console.log('placeHolder:' + placeHolder);
+
             return fetch('http://web.ablmcc.edu.hk/Content/07_parents/notice/index.aspx', {
               method: "POST",
               headers: {"Content-Type": "application/x-www-form-urlencoded"},
@@ -83,18 +85,21 @@ function getABLMCCNotices(year, callback) {
           .catch((err) => console.error(err));
 }
 
+// get ablmcc homework
 function getABLMCCHW(className, callback) {
   return fetch('http://web.ablmcc.edu.hk/Content/07_parents/homework/index.aspx')
-        .then((r) => r.text()).then((rt) => {
+        .then(r => r.text()).then(rt => {
           let doc = new DomParser().parseFromString(rt);
           let target = "ctl00%24ContentPlaceHolder1%24"+(232+classNameConvert(className));
           let viewState = encodeURIComponent(doc.getElementById('__VIEWSTATE').attributes[3].nodeValue);
           let eventValidation = encodeURIComponent(doc.getElementById('__EVENTVALIDATION').attributes[3].nodeValue);
+
           return fetch('http://web.ablmcc.edu.hk/Content/07_parents/homework/index.aspx', {
             method: "POST",
             headers: {"Content-Type": "application/x-www-form-urlencoded"},
             body: "__EVENTTARGET="+target+"&__VIEWSTATE="+viewState+"&__EVENTVALIDATION="+eventValidation+"&__SCROLLPOSITIONX=0&__SCROLLPOSITIONY=0"
           });
+
         })
         .then((r) => r.text()).then((rt) => {
           let doc = new DomParser().parseFromString(rt);
@@ -104,10 +109,92 @@ function getABLMCCHW(className, callback) {
         .catch((err) => console.error(err));
 }
 
+// get ablmcc contact info
+// specialized, not the pattern above
+function getABLMCCContactInfo(callback) {
+  return fetch('http://web.ablmcc.edu.hk/CustomPage/26/content.html')
+        .then(r => r.text()).then(rt => {
+          let doc = new DomParser().parseFromString(rt);
+          // the result
+          let result = []
+          // find all category
+          // all elements tag name is 'a'
+          let a = doc.getElementsByTagName('a');
+          let elements = []
+          for (let i=0; i<a.length; i++) {
+            let e = a.item(i);
+            if (e.getAttribute('href').includes('http://web.ablmcc.edu.hk/CustomPage/26/subjects/')) {
+              // got category and inner link
+              let category = e.firstChild.nodeValue;
+              let link = e.getAttribute('href');
+
+              // add category to result
+              result.push({
+                category: category,
+                list: [],
+              })
+              let currentIndex = result.length-1;
+
+              // open inner request
+              fetch(link)
+                .then(r2 => r2.text()).then(r2t => {
+                  console.log(`Processing: ${category}`);
+                  // hot fix on the fucking mistake occured on 旅遊與款待 page
+                  if (category == '旅遊與款待') {
+                    let n = r2t.lastIndexOf("<tr");
+                    r2t = r2t.slice(0, n-1) + "</tr>" + r2t.slice(n-1);
+                  }
+                  // Parse finally
+                  let docInner = new DomParser().parseFromString(r2t);
+
+                  // Get the rows of the category
+                  let list = Array.from(docInner.getElementsByTagName("tr"));
+                  list.shift();
+
+                  list.forEach(l => {
+                    if (l.getElementsByTagName('b').length == 0) return;
+
+                    let name; // set name
+                    // find name
+
+                    let baseElementName = l.getElementsByTagName('td').item(0);
+                    while (baseElementName.getElementsByTagName('font').length !== 0) baseElementName = baseElementName.getElementsByTagName('font').item(0);
+                    while (baseElementName.getElementsByTagName('b').length !== 0) baseElementName = baseElementName.getElementsByTagName('b').item(0);
+                    while (baseElementName.getElementsByTagName('a').length !== 0) baseElementName = baseElementName.getElementsByTagName('a').item(0);
+
+                    name = baseElementName.firstChild.nodeValue;
+
+
+                    Array.from(l.getElementsByTagName('a')).forEach(elementa => {
+                      if (elementa.getAttribute('href').includes('mailto')) {
+                        //console.log(elementa);
+                        let email = elementa.getAttribute('href').replace('mailto:', '');
+                        result[currentIndex].list.push({
+                          name: name,
+                          email: email,
+                        });
+                      }
+                    });
+                  });
+                }).catch(err2 => console.error(err2));
+            }
+          }
+          callback(result);
+        })
+        .catch(err => console.error(err));
+}
+
+
+
+
+
+
+
+
 export default class ABLMCCInterface {
   constructor() {
-    this.ablmcc = new Map([['NormalNews', undefined],['Notices', undefined],['Activities', undefined],['Career', undefined],['Assignments', undefined]]);
-    this.requested = new Map([['NormalNews', false],['Notices', 10],['Activities', false],['Career', false],['Assignments', false]]);
+    this.ablmcc = new Map([['NormalNews', undefined],['Notices', undefined],['About', undefined],['Career', undefined],['Assignments', undefined]]);
+    this.requested = new Map([['NormalNews', false],['Notices', 10],['About', false],['Career', false],['Assignments', false]]);
   }
 
   checkAvailability(callback) {
@@ -206,5 +293,19 @@ export default class ABLMCCInterface {
         callback(json);
       }
     );
+  }
+
+
+  // Contact Info
+  // Just a Wrapper
+  // Using Callback system
+  getContactInfo(callback) {
+    if (this.ablmcc.get('About') === undefined) {
+      getABLMCCContactInfo(json => {
+        this.ablmcc.set('About', json);
+        callback(json);
+      });
+    }
+    return this.ablmcc.get('About');
   }
 }

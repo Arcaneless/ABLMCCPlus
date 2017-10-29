@@ -16,7 +16,6 @@ var norNews = null;
 
 export default class NormalNews extends Component {
   static navigationOptions = {
-    tabBarLabel: '一般宣布',
     title: '一般宣布',
   };
 
@@ -37,7 +36,7 @@ export default class NormalNews extends Component {
   }
 
   onPress(o) {
-    console.log(o);
+    //console.log(o);
     this.gotoNext('http://web.ablmcc.edu.hk'+this.state.info.content[o].href);
   }
 
@@ -58,7 +57,7 @@ export default class NormalNews extends Component {
       //console.log(a);
       return (
         <ABLMCCWrapper>
-          <ListView style={this.props.style} dataSource={dss} onEndReached={() => console.log('hi')}
+          <ListView style={this.props.style} dataSource={dss} onEndReached={() => console.log('End')}
             renderRow={(o) => (
               <View>
                 <TouchableOpacity onPress={() => this.onPress(o)} style={[styles.normalNews]} >

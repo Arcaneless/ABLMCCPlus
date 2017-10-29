@@ -16,7 +16,6 @@ import styles from '../styles';
 
 export default class Notices extends Component {
   static navigationOptions = {
-    tabBarLabel: '通告',
     title: '通告',
   };
 

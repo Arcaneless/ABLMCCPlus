@@ -139,3 +139,17 @@
 
 .assFont {
 }
+
+.contact {
+  padding: 8;
+  background-color: transparent;
+}
+
+.contactCategory {
+  padding: 15;
+  background-color: transparent;
+}
+
+.contactCategoryText {
+  font-size: 20;
+}
