@@ -10,10 +10,12 @@ import {
 } from 'react-native';
 import moment from 'moment';
 import SCReader from '../SCReader';
-import Calendar from 'react-native-calendar';
+import { Calendar } from 'react-native-calendars';
 import ABLMCCWrapper from '../ABLMCCWrapper';
 var DomParser = require('react-native-html-parser').DOMParser;
 import styles from '../styles.js';
+const colorHoliday = '#69F0AE';
+const colorExam = '#64B5F6';
 
 function assignYear(semYear, data) {
   return data.map(inner => {
@@ -28,32 +30,75 @@ function assignYear(semYear, data) {
 }
 
 function extractDate(data) {
-  let r = [], i=0;
+  let r = {}, i=0;
   data.forEach(inner => {
     inner.date.forEach(iinner => {
-      r[i] = {
-        date: iinner,
-        ...color(getFromKey(iinner, data)),
-      }
+      let hasColor = color(getFromKey(iinner, data));
+      if(hasColor.colorExam === undefined && hasColor.colorHoliday === undefined) return;
+
+      r[iinner] = {
+        periods: []
+      };
+      if(hasColor.colorExam !== undefined) r[iinner].periods.push({'startingDay': hasColor.colorExam.startingDay,'endingDay': hasColor.colorExam.endingDay,'color': colorExam});
+      if(hasColor.colorHoliday !== undefined) r[iinner].periods.push({'startingDay': hasColor.colorHoliday.startingDay,'endingDay': hasColor.colorHoliday.endingDay,'color': colorHoliday});
       i++;
     })
   });
+  //...color(getFromKey(iinner, data)),
   return r;
 }
 
+function isExam(e) {
+  return (e.includes('試') && !e.includes('試後')) || e.includes('測驗');
+}
+
+function isHoliday(e) {
+  return e.includes('假') || e.includes('節');
+}
+
+function datesNotContinuous(d1: String, d2: String) {
+  return !Math.abs(Date.parse(d1)-Date.parse(d2)) == 1;
+}
+
+function previousDay(event: Array, i) {
+  if(i<=0) return '';
+  if(datesNotContinuous(event[i], event[i-1])) return '';
+  return event[i-1];
+}
+
+function nextDay(event: Array, i) {
+  if(i>=event.length) return '';
+  if(datesNotContinuous(event[i], event[i+1])) return '';
+  return event[i+1];
+}
+
 function color(event: Array) {
-  let gonna = {
-    eventIndicator: {backgroundColor: 'transparent'},
-    hasEventCircle: {backgroundColor: 'transparent'},
-    hasEventDaySelectedCircle: {backgroundColor: 'black'},
-    hasEventText: {backgroundColor: 'transparent'},
-  }, chosen = false;
-  event.forEach(e => {
-    if((e.includes('試') && !e.includes('試後')) || e.includes('測驗')) gonna.hasEventCircle.backgroundColor = '#64B5F6', chosen=true;
-    if(e.includes('假') || e.includes('節')) gonna.hasEventText.backgroundColor = '#69F0AE', chosen=true;
-    if(!chosen) gonna.eventIndicator.backgroundColor = '#000000';
+  let hasColor = {};
+  event.forEach((e, i) => {
+    if(isExam(e)) hasColor.colorExam = {startingDay: false, endingDay: false};
+    if(isHoliday(e)) hasColor.colorHoliday = {startingDay: false, endingDay: false};
+
+    if(i == 0) {
+      if(isExam(e)) hasColor.colorExam.startingDay = true;
+      if(isHoliday(e)) hasColor.colorHoliday.startingDay = true;
+    }
+
+    if(i == event.length - 1) {
+      if(isExam(e)) hasColor.colorExam.endingDay = true;
+      if(isHoliday(e)) hasColor.colorHoliday.endingDay = true;
+    }
+
+    if(isExam(e)) {
+      if(!isExam(previousDay(event,i))) hasColor.colorExam.startingDay = true;
+      if(!isExam(nextDay(event,i))) hasColor.colorExam.endingDay = true;
+    }
+    if(isHoliday(e)) {
+      if(!isHoliday(previousDay(event,i))) hasColor.colorHoliday.startingDay = true;
+      if(!isHoliday(nextDay(event,i))) hasColor.colorHoliday.endingDay = true;
+    }
+
   });
-  return gonna;
+  return hasColor;
 }
 
 function getFromKey(key, data) {
@@ -77,7 +122,7 @@ export default class SchoolCalendar extends Component {
     this.state = {
       date: moment().format(),
       events: [],
-      onlyDate: [],
+      onlyDate: {},
       eventText: [],
     };
     new SCReader().getEvents()
@@ -93,7 +138,11 @@ export default class SchoolCalendar extends Component {
   }
 
   selectDate(date) {
-    this.setState({ date: date, eventText: getFromKey(date.split('T')[0], this.state.events)});
+    let onlyDate = JSON.parse(JSON.stringify(this.state.onlyDate));
+    onlyDate[this.state.date].selected = false;
+    onlyDate[date].selected = true;
+    onlyDate[date].selectedColor = 'blue';
+    this.setState({ date: date, onlyDate: onlyDate, eventText: getFromKey(date, this.state.events)});
   }
 
   render() {
@@ -113,18 +162,17 @@ export default class SchoolCalendar extends Component {
       <ABLMCCWrapper>
         <View>
           <Calendar
-            currentMonth={this.state.date}
-            selectedDate={this.state.date}
-            customStyle={CStyle}
-            events={this.state.onlyDate}
-            onDateSelect={(date) => this.selectDate(date)}
-            prevButtonText={'Prev'}
-            nextButtonText={'Next'}
+            //currentMonth={this.state.date}
+            current={this.state.date}
+            //customStyle={CStyle}
+            onDayPress={(date) => this.selectDate(date.dateString)}
             scrollEnabled={false}
-            showControls={true}
-            showEventIndicators={true}
-            titleFormat={'MMMM YYYY'}
+            //showControls={true}
+            //showEventIndicators={true}
+            monthFormat={'MMMM yy'}
             weekStart={0}
+            markedDates={this.state.onlyDate}
+            markingType='multi-period'
           />
           <TouchableOpacity onPress={() => this.selectDate(moment().format())} style={{
             padding: 10,

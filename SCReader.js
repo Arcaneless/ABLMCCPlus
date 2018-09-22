@@ -1,5 +1,6 @@
 const month = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月']
 import RNFetchBlob from 'react-native-fetch-blob'
+import { Platform } from 'react-native'
 currentMonth = 9
 function read(file) {
   console.log('start res');
@@ -96,8 +97,14 @@ export default class SCReader {
   getEvents() {
     return new Promise((resolve, err) => {
       if(this.already != undefined) resolve(this.already)
-      console.log('SCReader: reading txt: ' + RNFetchBlob.fs.dirs.MainBundleDir+'/data/sc.txt');
-      RNFetchBlob.fs.readFile(RNFetchBlob.fs.dirs.MainBundleDir+'/data/sc.txt', 'utf8')
+      let fileUrl = ''
+      if (Platform.OS === 'ios') {
+        fileUrl = RNFetchBlob.fs.dirs.MainBundleDir+'/data/sc.txt'
+      } else {
+        fileUrl = 'bundle-assets://sc.txt'
+      }
+      console.log('SCReader: reading txt: ' + fileUrl);
+      RNFetchBlob.fs.readFile(fileUrl, 'utf8')
       .then((data) => {
         console.log('Read OK')
         this.already = read(data.toString())

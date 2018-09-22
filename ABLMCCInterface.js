@@ -27,7 +27,7 @@ function checkAvailability() {
       setTimeout(reject, 500, 'Request timed out');
   });
 
-  const request = fetch('http://web.ablmcc.edu.hk/index/index18.aspx?nnnid=1');
+  const request = fetch('https://web.ablmcc.edu.hk/index/index18.aspx?nnnid=1');
 
   return Promise
       .race([timeout, request])
@@ -59,7 +59,7 @@ function getABLMCC(url, callback) {
   @Return {Promise} fetch - the fetching
 */
 function getABLMCCNotices(year, callback) {
-  return fetch('http://web.ablmcc.edu.hk/Content/07_parents/notice/index.aspx')
+  return fetch('https://web.ablmcc.edu.hk/Content/07_parents/notice/index.aspx')
           .then((r) => r.text()).then((rt) => {
             let doc = new DomParser().parseFromString(rt);
             let target = "ctl00%24ContentPlaceHolder1%24ddlstSchoolYear";
@@ -71,7 +71,7 @@ function getABLMCCNotices(year, callback) {
 
             console.log('placeHolder:' + placeHolder);
 
-            return fetch('http://web.ablmcc.edu.hk/Content/07_parents/notice/index.aspx', {
+            return fetch('https://web.ablmcc.edu.hk/Content/07_parents/notice/index.aspx', {
               method: "POST",
               headers: {"Content-Type": "application/x-www-form-urlencoded"},
               body: "__EVENTTARGET="+target+"&__VIEWSTATE="+viewState+"&__EVENTVALIDATION="+eventValidation+"&__SCROLLPOSITIONX=0&__SCROLLPOSITIONY=0"+
@@ -87,14 +87,14 @@ function getABLMCCNotices(year, callback) {
 
 // get ablmcc homework
 function getABLMCCHW(className, callback) {
-  return fetch('http://web.ablmcc.edu.hk/Content/07_parents/homework/index.aspx')
+  return fetch('https://web.ablmcc.edu.hk/Content/07_parents/homework/index.aspx')
         .then(r => r.text()).then(rt => {
           let doc = new DomParser().parseFromString(rt);
           let target = "ctl00%24ContentPlaceHolder1%24"+(232+classNameConvert(className));
           let viewState = encodeURIComponent(doc.getElementById('__VIEWSTATE').attributes[3].nodeValue);
           let eventValidation = encodeURIComponent(doc.getElementById('__EVENTVALIDATION').attributes[3].nodeValue);
 
-          return fetch('http://web.ablmcc.edu.hk/Content/07_parents/homework/index.aspx', {
+          return fetch('https://web.ablmcc.edu.hk/Content/07_parents/homework/index.aspx', {
             method: "POST",
             headers: {"Content-Type": "application/x-www-form-urlencoded"},
             body: "__EVENTTARGET="+target+"&__VIEWSTATE="+viewState+"&__EVENTVALIDATION="+eventValidation+"&__SCROLLPOSITIONX=0&__SCROLLPOSITIONY=0"
@@ -112,7 +112,7 @@ function getABLMCCHW(className, callback) {
 // get ablmcc contact info
 // specialized, not the pattern above
 function getABLMCCContactInfo(callback) {
-  return fetch('http://web.ablmcc.edu.hk/CustomPage/26/content.html')
+  return fetch('https://web.ablmcc.edu.hk/CustomPage/26/content.html')
         .then(r => r.text()).then(rt => {
           let doc = new DomParser().parseFromString(rt);
           // the result
@@ -123,7 +123,7 @@ function getABLMCCContactInfo(callback) {
           let elements = []
           for (let i=0; i<a.length; i++) {
             let e = a.item(i);
-            if (e.getAttribute('href').includes('http://web.ablmcc.edu.hk/CustomPage/26/subjects/')) {
+            if (e.getAttribute('href').includes('https://web.ablmcc.edu.hk/CustomPage/26/subjects/')) {
               // got category and inner link
               let category = e.firstChild.nodeValue;
               let link = e.getAttribute('href');
@@ -204,14 +204,14 @@ export default class ABLMCCInterface {
   getNormalNews(callback) {
     if(this.ablmcc.get('NormalNews')===undefined) {
       this.requested.set('NormalNews', true);
-      getABLMCC('http://web.ablmcc.edu.hk/Content/08_others/01_what_is_new/index.aspx', (d) => {
+      getABLMCC('https://web.ablmcc.edu.hk/Content/08_others/01_what_is_new/index.aspx', (d) => {
         let table = d.getElementByClassName('latestNews').childNodes;
         var json = {'content': []};
         //HTML Finding
         for(let i=2, p=0; i<table.length-1; i++) {
           let ele = table[i];
           let date = ele.childNodes[1].firstChild.nodeValue;
-          let caption = ele.childNodes[2].firstChild.firstChild.nodeValue;
+          let caption = ele.childNodes[2].getElementsByTagName('a')[0].firstChild.nodeValue;
           let ele2 = ele.childNodes[2].childNodes[2];
           if(ele2 != undefined) {
             let ele3 = ele2.childNodes;

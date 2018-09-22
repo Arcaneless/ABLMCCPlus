@@ -37,7 +37,7 @@ export default class NormalNews extends Component {
 
   onPress(o) {
     //console.log(o);
-    this.gotoNext('http://web.ablmcc.edu.hk'+this.state.info.content[o].href);
+    this.gotoNext('https://web.ablmcc.edu.hk'+this.state.info.content[o].href);
   }
 
   gotoNext(v) {
@@ -72,11 +72,11 @@ export default class NormalNews extends Component {
       );
     } else {
       return (
-        <ABLMCCWrapper render={(
+        <ABLMCCWrapper>
           <View style={this.props.style}>
             <Text>Loading...</Text>
           </View>
-        )} />
+        </ABLMCCWrapper>
       );
     }
   }

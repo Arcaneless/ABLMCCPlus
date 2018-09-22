@@ -42,7 +42,7 @@ export default class Notices extends Component {
   }
 
   onPress(o) {
-    this.gotoNext('http://web.ablmcc.edu.hk'+this.state.info.content[o].href);
+    this.gotoNext('https://web.ablmcc.edu.hk'+this.state.info.content[o].href);
   }
 
   gotoNext(v) {
